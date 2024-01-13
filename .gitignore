@@ -3,6 +3,7 @@ debian
 deb_dist
 dist
 node_modules
+.vscode
 *.egg-info
 *.pyc
 *.tgz

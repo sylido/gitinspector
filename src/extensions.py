@@ -17,21 +17,23 @@
 # You should have received a copy of the GNU General Public License
 # along with gitinspector. If not, see <http://www.gnu.org/licenses/>.
 
-from __future__ import print_function
-from __future__ import unicode_literals
+DEFAULT_EXTENSIONS = ["java", "c", "cc", "cpp", "h", "hh", "hpp", "py", "glsl", "rb", "js", "sql"]
 
-class ResponsibiltyEntry(object):
-	blames = {}
+__extensions__ = DEFAULT_EXTENSIONS
+__located_extensions__ = set()
 
-class Responsibilities(object):
-	@staticmethod
-	def get(blame, author_name):
-		author_blames = {}
+def get():
+	return __extensions__
 
-		for i in blame.blames.items():
-			if author_name == i[0][0]:
-				total_rows = i[1].rows - i[1].comments
-				if total_rows > 0:
-					author_blames[i[0][1]] = total_rows
+def define(string):
+	global __extensions__
+	__extensions__ = string.split(",")
 
-		return sorted(author_blames.items())
+def add_located(string):
+	if len(string) == 0:
+		__located_extensions__.add("*")
+	else:
+		__located_extensions__.add(string)
+
+def get_located():
+	return __located_extensions__

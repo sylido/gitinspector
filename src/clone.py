@@ -17,17 +17,13 @@
 # You should have received a copy of the GNU General Public License
 # along with gitinspector. If not, see <http://www.gnu.org/licenses/>.
 
-from __future__ import unicode_literals
 import os
 import shutil
 import subprocess
 import sys
 import tempfile
 
-try:
-	from urllib.parse import urlparse
-except:
-	from urlparse import urlparse
+from urllib.parse import urlparse
 
 __cloned_paths__ = []
 

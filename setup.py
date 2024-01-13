@@ -18,8 +18,7 @@
 # along with gitinspector. If not, see <http://www.gnu.org/licenses/>.
 
 import os
-import sys
-from gitinspector.version import __version__
+from src.version import __version__
 from glob import glob
 from setuptools import setup, find_packages
 

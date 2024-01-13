@@ -17,8 +17,6 @@
 # You should have received a copy of the GNU General Public License
 # along with gitinspector. If not, see <http://www.gnu.org/licenses/>.
 
-from __future__ import print_function
-from __future__ import unicode_literals
 import atexit
 import getopt
 import os
@@ -103,7 +101,7 @@ class Runner(object):
 		os.chdir(previous_directory)
 
 def __check_python_version__():
-	if sys.version_info < (2, 6):
+	if sys.version_info < (3, 6):
 		python_version = str(sys.version_info[0]) + "." + str(sys.version_info[1])
 		sys.exit(_("gitinspector requires at least Python 2.6 to run (version {0} was found).").format(python_version))
 
@@ -207,7 +205,7 @@ def main():
 
 	except (filtering.InvalidRegExpError, format.InvalidFormatError, optval.InvalidOptionArgument, getopt.error) as exception:
 		print(sys.argv[0], "\b:", exception.msg, file=sys.stderr)
-		print(_("Try `{0} --help' for more information.").format(sys.argv[0]), file=sys.stderr)
+		print(("Try `{0} --help' for more information.").format(sys.argv[0]), file=sys.stderr)
 		sys.exit(2)
 
 @atexit.register

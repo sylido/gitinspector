@@ -1,6 +1,6 @@
 # coding: utf-8
 #
-# Copyright © 2013-2014 Ejwa Software. All rights reserved.
+# Copyright © 2012-2015 Ejwa Software. All rights reserved.
 #
 # This file is part of gitinspector.
 #
@@ -17,24 +17,18 @@
 # You should have received a copy of the GNU General Public License
 # along with gitinspector. If not, see <http://www.gnu.org/licenses/>.
 
-from __future__ import unicode_literals
-import hashlib
+class ResponsibiltyEntry(object):
+	blames = {}
 
-try:
-	from urllib.parse import urlencode
-except:
-	from urllib import urlencode
+class Responsibilities(object):
+	@staticmethod
+	def get(blame, author_name):
+		author_blames = {}
 
-from . import format
+		for i in blame.blames.items():
+			if author_name == i[0][0]:
+				total_rows = i[1].rows - i[1].comments
+				if total_rows > 0:
+					author_blames[i[0][1]] = total_rows
 
-def get_url(email, size=20):
-	md5hash = hashlib.md5(email.encode("utf-8").lower().strip()).hexdigest()
-	base_url = "https://www.gravatar.com/avatar/" + md5hash
-	params = None
-
-	if format.get_selected() == "html":
-		params = {"default": "identicon", "size": size}
-	elif format.get_selected() == "xml" or format.get_selected() == "json":
-		params = {"default": "identicon"}
-
-	return base_url + "?" + urlencode(params)
+		return sorted(author_blames.items())
