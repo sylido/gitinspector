@@ -23,12 +23,12 @@ import platform
 import sys
 import unicodedata
 
-__bold__ = "\033[1m"
-__normal__ = "\033[0;0m"
+bold = "\033[1m"
+normal = "\033[0;0m"
 
 DEFAULT_TERMINAL_SIZE = (80, 25)
 
-def __get_size_windows__():
+def _get_size_windows():
 	res = None
 	try:
 		from ctypes import windll, create_string_buffer
@@ -48,7 +48,7 @@ def __get_size_windows__():
 	else:
 		return DEFAULT_TERMINAL_SIZE
 
-def __get_size_linux__():
+def _get_size_linux():
 	def ioctl_get_window_size(file_descriptor):
 		try:
 			import fcntl, termios, struct
@@ -80,13 +80,13 @@ def clear_row():
 
 def skip_escapes(skip):
 	if skip:
-		global __bold__
-		global __normal__
-		__bold__ = ""
-		__normal__ = ""
+		global _bold
+		global _normal
+		_bold = ""
+		_normal = ""
 
 def printb(string):
-	print(__bold__ + string + __normal__)
+	print(_bold + string + _normal)
 
 def get_size():
 	width = 0
@@ -96,9 +96,9 @@ def get_size():
 		current_os = platform.system()
 
 		if current_os == "Windows":
-			(width, height) = __get_size_windows__()
+			(width, height) = _get_size_windows()
 		elif current_os == "Linux" or current_os == "Darwin" or  current_os.startswith("CYGWIN"):
-			(width, height) = __get_size_linux__()
+			(width, height) = _get_size_linux()
 
 	if width > 0:
 		return (width, height)

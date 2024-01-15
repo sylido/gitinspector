@@ -22,32 +22,32 @@ try:
 except ImportError:
 	from pipes import quote
 
-__since__ = ""
+_since = ""
 
-__until__ = ""
+_until = ""
 
-__ref__ = "HEAD"
+_ref = "HEAD"
 
 def has_interval():
-	return __since__ + __until__ != ""
+	return _since + _until != ""
 
 def get_since():
-	return __since__
+	return _since
 
 def set_since(since):
-	global __since__
-	__since__ = "--since=" + quote(since)
+	global _since
+	_since = "--since=" + quote(since)
 
 def get_until():
-	return __until__
+	return _until
 
 def set_until(until):
-	global __until__
-	__until__ = "--until=" + quote(until)
+	global _until
+	_until = "--until=" + quote(until)
 
 def get_ref():
-	return __ref__
+	return _ref
 
 def set_ref(ref):
 	global __ref__
-	__ref__ = ref
+	_ref = ref

@@ -19,10 +19,10 @@
 
 import sys
 from .extensions import DEFAULT_EXTENSIONS
-from .format import __available_formats__
+from .format import available_formats
 
 
-__doc__ = _("""Usage: {0} [OPTION]... [REPOSITORY]...
+_doc = """Usage: {0} [OPTION]... [REPOSITORY]...
 List information about the repository in REPOSITORY. If no repository is
 specified, the current directory is used. If multiple repositories are
 given, information will be merged into a unified statistical report.
@@ -74,7 +74,7 @@ add or remove one of the specified extensions, see -f or --file-types for
 more information.
 
 gitinspector requires that the git executable is available in your PATH.
-Report gitinspector bugs to gitinspector@ejwa.se.""")
+Report gitinspector bugs to gitinspector@ejwa.se."""
 
 def output():
-	print(__doc__.format(sys.argv[0], ",".join(DEFAULT_EXTENSIONS), ",".join(__available_formats__)))
+	print(_doc.format(sys.argv[0], ",".join(DEFAULT_EXTENSIONS), ))

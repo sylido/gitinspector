@@ -25,11 +25,10 @@ import zipfile
 from .localization import N_
 from . import basedir, localization, terminal, version
 
-__available_formats__ = ["html", "htmlembedded", "json", "text", "xml"]
+available_formats = ["html", "htmlembedded", "json", "text", "xml"]
+DEFAULT_FORMAT = available_formats[3]
 
-DEFAULT_FORMAT = __available_formats__[3]
-
-__selected_format__ = DEFAULT_FORMAT
+selected_format = DEFAULT_FORMAT
 
 class InvalidFormatError(Exception):
 	def __init__(self, msg):
@@ -37,18 +36,18 @@ class InvalidFormatError(Exception):
 		self.msg = msg
 
 def select(format):
-	global __selected_format__
-	__selected_format__ = format
+	global selected_format
+	selected_format = format
 
-	return format in __available_formats__
+	return format in available_formats
 
 def get_selected():
-	return __selected_format__
+	return selected_format
 
 def is_interactive_format():
-	return __selected_format__ == "text"
+	return selected_format == "text"
 
-def __output_html_template__(name):
+def _output_html_template(name):
 	template_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), name)
 	file_r = open(template_path, "rb")
 	template = file_r.read().decode("utf-8", "replace")
@@ -56,7 +55,7 @@ def __output_html_template__(name):
 	file_r.close()
 	return template
 
-def __get_zip_file_content__(name, file_name="/html/flot.zip"):
+def _get_zip_file_content(name, file_name="/html/flot.zip"):
 	zip_file = zipfile.ZipFile(basedir.get_basedir() + file_name, "r")
 	content = zip_file.read(name)
 
@@ -69,23 +68,23 @@ INFO_MANY_REPOSITORIES = N_("Statistical information for the repositories '{0}' 
 def output_header(repos):
 	repos_string = ", ".join([repo.name for repo in repos])
 
-	if __selected_format__ == "html" or __selected_format__ == "htmlembedded":
+	if selected_format == "html" or selected_format == "htmlembedded":
 		base = basedir.get_basedir()
-		html_header = __output_html_template__(base + "/html/html.header")
-		tablesorter_js = __get_zip_file_content__("jquery.tablesorter.min.js",
+		html_header = _output_html_template(base + "/html/html.header")
+		tablesorter_js = _get_zip_file_content("jquery.tablesorter.min.js",
 		                                          "/html/jquery.tablesorter.min.js.zip").encode("latin-1", "replace")
 		tablesorter_js = tablesorter_js.decode("utf-8", "ignore")
-		flot_js = __get_zip_file_content__("jquery.flot.js")
-		pie_js = __get_zip_file_content__("jquery.flot.pie.js")
-		resize_js = __get_zip_file_content__("jquery.flot.resize.js")
+		flot_js = _get_zip_file_content("jquery.flot.js")
+		pie_js = _get_zip_file_content("jquery.flot.pie.js")
+		resize_js = _get_zip_file_content("jquery.flot.resize.js")
 
 		logo_file = open(base + "/html/gitinspector_piclet.png", "rb")
 		logo = logo_file.read()
 		logo_file.close()
 		logo = base64.b64encode(logo)
 
-		if __selected_format__ == "htmlembedded":
-			jquery_js = ">" + __get_zip_file_content__("jquery.js")
+		if selected_format == "htmlembedded":
+			jquery_js = ">" + _get_zip_file_content("jquery.js")
 		else:
 			jquery_js = " src=\"https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js\">"
 
@@ -106,7 +105,7 @@ def output_header(repos):
 		                         hide_minor_authors=_("Hide minor authors"),
 		                         show_minor_rows=_("Show rows with minor work"),
 		                         hide_minor_rows=_("Hide rows with minor work")))
-	elif __selected_format__ == "json":
+	elif selected_format == "json":
 		print("{\n\t\"gitinspector\": {")
 		print("\t\t\"version\": \"" + version.__version__ + "\",")
 
@@ -122,7 +121,7 @@ def output_header(repos):
 
 		print("\t\t\"report_date\": \"" + time.strftime("%Y/%m/%d") + "\",")
 
-	elif __selected_format__ == "xml":
+	elif selected_format == "xml":
 		print("<gitinspector>")
 		print("\t<version>" + version.__version__ + "</version>")
 
@@ -142,11 +141,11 @@ def output_header(repos):
 		      repos_string, localization.get_date()), width=terminal.get_size()[0]))
 
 def output_footer():
-	if __selected_format__ == "html" or __selected_format__ == "htmlembedded":
+	if selected_format == "html" or selected_format == "htmlembedded":
 		base = basedir.get_basedir()
-		html_footer = __output_html_template__(base + "/html/html.footer")
+		html_footer = _output_html_template(base + "/html/html.footer")
 		print(html_footer)
-	elif __selected_format__ == "json":
+	elif selected_format == "json":
 		print("\n\t}\n}")
-	elif __selected_format__ == "xml":
+	elif selected_format == "xml":
 		print("</gitinspector>")

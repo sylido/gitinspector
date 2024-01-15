@@ -29,14 +29,14 @@ from . import extensions, filtering, format, interval, terminal
 CHANGES_PER_THREAD = 200
 NUM_THREADS = multiprocessing.cpu_count()
 
-__thread_lock__ = threading.BoundedSemaphore(NUM_THREADS)
-__changes_lock__ = threading.Lock()
+_thread_lock = threading.BoundedSemaphore(NUM_THREADS)
+_changes_lock = threading.Lock()
 
 class FileDiff(object):
 	def __init__(self, string):
 		commit_line = string.split("|")
 
-		if commit_line.__len__() == 2:
+		if len(commit_line) == 2:
 			self.name = commit_line[0].strip()
 			self.insertions = commit_line[1].count("+")
 			self.deletions = commit_line[1].count("-")
@@ -44,7 +44,7 @@ class FileDiff(object):
 	@staticmethod
 	def is_filediff_line(string):
 		string = string.split("|")
-		return string.__len__() == 2 and string[1].find("Bin") == -1 and ('+' in string[1] or '-' in string[1])
+		return len(string) == 2 and string[1].find("Bin") == -1 and ('+' in string[1] or '-' in string[1])
 
 	@staticmethod
 	def get_extension(string):
@@ -69,7 +69,7 @@ class Commit(object):
 		self.filediffs = []
 		commit_line = string.split("|")
 
-		if commit_line.__len__() == 5:
+		if len(commit_line) == 5:
 			self.timestamp = commit_line[0]
 			self.date = commit_line[1]
 			self.sha = commit_line[2]
@@ -89,12 +89,12 @@ class Commit(object):
 	def get_author_and_email(string):
 		commit_line = string.split("|")
 
-		if commit_line.__len__() == 5:
+		if len(commit_line) == 5:
 			return (commit_line[3].strip(), commit_line[4].strip())
 
 	@staticmethod
 	def is_commit_line(string):
-		return string.split("|").__len__() == 5
+		return len(string.split("|")) == 5
 
 class AuthorInfo(object):
 	email = None
@@ -104,7 +104,7 @@ class AuthorInfo(object):
 
 class ChangesThread(threading.Thread):
 	def __init__(self, hard, changes, first_hash, second_hash, offset):
-		__thread_lock__.acquire() # Lock controlling the number of threads running
+		_thread_lock.acquire() # Lock controlling the number of threads running
 		threading.Thread.__init__(self)
 
 		self.hard = hard
@@ -132,7 +132,7 @@ class ChangesThread(threading.Thread):
 		is_filtered = False
 		commits = []
 
-		__changes_lock__.acquire() # Global lock used to protect calls from here...
+		_changes_lock.acquire() # Global lock used to protect calls from here...
 
 		for i in lines:
 			j = i.strip().decode("unicode_escape", "ignore")
@@ -169,8 +169,8 @@ class ChangesThread(threading.Thread):
 					commit.add_filediff(filediff)
 
 		self.changes.commits[self.offset // CHANGES_PER_THREAD] = commits
-		__changes_lock__.release() # ...to here.
-		__thread_lock__.release() # Lock controlling the number of threads running
+		_changes_lock.release() # ...to here.
+		_thread_lock.release() # Lock controlling the number of threads running
 
 PROGRESS_TEXT = N_("Fetching and calculating primary statistics (1 of 2): {0:.0f}%")
 
@@ -182,7 +182,7 @@ class Changes(object):
 
 	def __init__(self, repo, hard):
 		self.commits = []
-		interval.set_ref("HEAD");
+		interval.set_ref("HEAD")
 		git_rev_list_p = subprocess.Popen(filter(None, ["git", "rev-list", "--reverse", "--no-merges",
 		                                  interval.get_since(), interval.get_until(), "HEAD"]),
 		                                  stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
@@ -215,11 +215,11 @@ class Changes(object):
 
 		# Make sure all threads have completed.
 		for i in range(0, NUM_THREADS):
-			__thread_lock__.acquire()
+			_thread_lock.acquire()
 
 		# We also have to release them for future use.
 		for i in range(0, NUM_THREADS):
-			__thread_lock__.release()
+			_thread_lock.release()
 
 		self.commits = [item for sublist in self.commits for item in sublist]
 

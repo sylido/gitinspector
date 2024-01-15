@@ -25,7 +25,7 @@ import tempfile
 
 from urllib.parse import urlparse
 
-__cloned_paths__ = []
+_cloned_paths = []
 
 def create(url):
 	class Repository(object):
@@ -44,11 +44,11 @@ def create(url):
 		if git_clone.returncode != 0:
 			sys.exit(git_clone.returncode)
 
-		__cloned_paths__.append(path)
+		_cloned_paths.append(path)
 		return Repository(os.path.basename(parsed_url.path), path)
 
 	return Repository(None, os.path.abspath(url))
 
 def delete():
-	for path in __cloned_paths__:
+	for path in _cloned_paths:
 		shutil.rmtree(path, ignore_errors=True)

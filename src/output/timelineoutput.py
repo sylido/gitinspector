@@ -25,13 +25,13 @@ from .outputable import Outputable
 TIMELINE_INFO_TEXT = N_("The following history timeline has been gathered from the repository")
 MODIFIED_ROWS_TEXT = N_("Modified Rows:")
 
-def __output_row__text__(timeline_data, periods, names):
-	print("\n" + terminal.__bold__ + terminal.ljust(_("Author"), 20), end=" ")
+def _output_row__text(timeline_data, periods, names):
+	print("\n" + terminal.bold + terminal.ljust(_("Author"), 20), end=" ")
 
 	for period in periods:
 		print(terminal.rjust(period, 10), end=" ")
 
-	print(terminal.__normal__)
+	print(terminal.normal)
 
 	for name in names:
 		if timeline_data.is_author_in_periods(periods, name[0]):
@@ -45,7 +45,7 @@ def __output_row__text__(timeline_data, periods, names):
 				               len(signs_str) == 0 else signs_str).rjust(10), end=" ")
 			print("")
 
-	print(terminal.__bold__  + terminal.ljust(_(MODIFIED_ROWS_TEXT), 20) + terminal.__normal__, end=" ")
+	print(terminal.bold  + terminal.ljust(_(MODIFIED_ROWS_TEXT), 20) + terminal.normal, end=" ")
 
 	for period in periods:
 		total_changes = str(timeline_data.get_total_changes_in_period(period)[2])
@@ -57,7 +57,7 @@ def __output_row__text__(timeline_data, periods, names):
 
 	print("")
 
-def __output_row__html__(timeline_data, periods, names):
+def _output_row_html(timeline_data, periods, names):
 	timeline_xml = "<table class=\"git full\"><thead><tr><th>" + _("Author") + "</th>"
 
 	for period in periods:
@@ -111,7 +111,7 @@ class TimelineOutput(Outputable):
 			max_periods_per_row = int((width - 21) / 11)
 
 			for i in range(0, len(periods), max_periods_per_row):
-				__output_row__text__(timeline_data, periods[i:i+max_periods_per_row], names)
+				_output_row__text(timeline_data, periods[i:i+max_periods_per_row], names)
 
 	def output_html(self):
 		if self.changes.get_commits():
@@ -125,7 +125,7 @@ class TimelineOutput(Outputable):
 			print(timeline_xml)
 
 			for i in range(0, len(periods), max_periods_per_row):
-				__output_row__html__(timeline_data, periods[i:i+max_periods_per_row], names)
+				_output_row_html(timeline_data, periods[i:i+max_periods_per_row], names)
 
 			timeline_xml = "</div></div>"
 			print(timeline_xml)

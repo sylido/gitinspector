@@ -100,12 +100,12 @@ class Runner(object):
 		format.output_footer()
 		os.chdir(previous_directory)
 
-def __check_python_version__():
+def _check_python_version():
 	if sys.version_info < (3, 6):
 		python_version = str(sys.version_info[0]) + "." + str(sys.version_info[1])
 		sys.exit(_("gitinspector requires at least Python 2.6 to run (version {0} was found).").format(python_version))
 
-def __get_validated_git_repos__(repos_relative):
+def _get_validated_git_repos(repos_relative):
 	if not repos_relative:
 		repos_relative = "."
 
@@ -127,6 +127,41 @@ def main():
 	terminal.check_terminal_encoding()
 	terminal.set_stdin_encoding()
 	argv = terminal.convert_command_line_to_utf8()
+
+	import argparse
+	parser = argparse.ArgumentParser(prog="gitinspector",
+								     description="Collects and displays authorship and composition statistics about "
+									             "the given directory (in a git repo).",
+									 epilog="gitinspector will filter statistics to only include commits that modify, add, "
+									 "or remove one of the specified extensions, see -f or --file-types for more information.\n"
+									 "gitinspector requires that the git executable is available in your PATH.")
+	parser.add_argument("-f", "--file-types",
+			help="a comma separated list of file extensions to include when computing statistics. By default, all "
+			"extensions are considered (*).")
+	parser.add_argument("-F", "--format",
+			help="define in which format output should be generated. Options include: " + (",".join(__available_formats__)) +
+			". Default is 'text'.",
+			choices=__available_formats__,
+			default="text")
+	parser.add_argument("-m", "--metrics", action='store_true',
+			help="include checks for certain metrics during the analysis of commits")
+	parser.add_argument("-r", "--responsibilities", action='store_true',
+			help="show which files the different authors seem most responsible for")
+	parser.add_argument("--since", help="only show statistics for commits more recent than a specific date")
+	parser.add_argument("-T", "--timeline", action="store_true",
+			help="show commit timeline, including author names")
+	parser.add_argument("--until", help="only show statistics for commits older than specific date")
+	parser.add_argument("-w", "--weeks", action="store_true",
+			help="show all statistical information in weeks instead of months")
+	parser.add_argument("-x", "--exclude",
+			help="specify an exclusion pattern describing the file paths, revisions, revisions with certain commit messages, "
+			"author names, or author emails which should be excluded from statistics; can be specified multiple times")
+	parser.add_argument("--version", action="store_true", help="output version information and exit")
+	args = parser.parse_args()
+
+
+	exit()
+
 	run = Runner()
 	repos = []
 
@@ -135,7 +170,7 @@ def main():
 		                                         "hard:true", "help", "list-file-types:true", "localize-output:true",
 		                                         "metrics:true", "responsibilities:true", "since=", "grading:true",
 		                                         "timeline:true", "until=", "version", "weeks:true"])
-		repos = __get_validated_git_repos__(set(args))
+		repos = _get_validated_git_repos(set(args))
 
 		#We need the repos above to be set before we read the git config.
 		GitConfig(run, repos[-1].location).read()
@@ -200,7 +235,7 @@ def main():
 					filtering.clear()
 				filtering.add(a)
 
-		__check_python_version__()
+		_check_python_version()
 		run.process(repos)
 
 	except (filtering.InvalidRegExpError, format.InvalidFormatError, optval.InvalidOptionArgument, getopt.error) as exception:

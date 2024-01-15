@@ -25,24 +25,24 @@ import sys
 import time
 from . import basedir
 
-__enabled__ = False
-__installed__ = False
-__translation__ = None
+_enabled = False
+_installed = False
+_translation = None
 
 #Dummy function used to handle string constants
 def N_(message):
 	return message
 
 def init():
-	global __enabled__
-	global __installed__
-	global __translation__
+	global _enabled
+	global _installed
+	global _translation
 
-	if not __installed__:
+	if not _installed:
 		try:
 			locale.setlocale(locale.LC_ALL, "")
 		except locale.Error:
-			__translation__ = gettext.NullTranslations()
+			_translation = gettext.NullTranslations()
 		else:
 			lang = locale.getlocale()
 
@@ -57,19 +57,19 @@ def init():
 				filename = basedir.get_basedir() + "/translations/messages_%s.mo" % lang[0][0:2]
 
 				try:
-					__translation__ = gettext.GNUTranslations(open(filename, "rb"))
+					_translation = gettext.GNUTranslations(open(filename, "rb"))
 				except IOError:
-					__translation__ = gettext.NullTranslations()
+					_translation = gettext.NullTranslations()
 			else:
 				print("WARNING: Localization disabled because the system language could not be determined.", file=sys.stderr)
-				__translation__ = gettext.NullTranslations()
+				_translation = gettext.NullTranslations()
 
-		__enabled__ = True
-		__installed__ = True
-		__translation__.install()
+		_enabled = True
+		_installed = True
+		_translation.install()
 
 def check_compatibility(version):
-	if isinstance(__translation__, gettext.GNUTranslations):
+	if isinstance(_translation, gettext.GNUTranslations):
 		header_pattern = re.compile("^([^:\n]+): *(.*?) *$", re.MULTILINE)
 		header_entries = dict(header_pattern.findall(_("")))
 
@@ -79,7 +79,7 @@ def check_compatibility(version):
 			      file=sys.stderr)
 
 def get_date():
-	if __enabled__ and isinstance(__translation__, gettext.GNUTranslations):
+	if _enabled and isinstance(_translation, gettext.GNUTranslations):
 		date = time.strftime("%x")
 
 		if hasattr(date, 'decode'):
@@ -90,15 +90,15 @@ def get_date():
 		return time.strftime("%Y/%m/%d")
 
 def enable():
-	if isinstance(__translation__, gettext.GNUTranslations):
-		__translation__.install()
+	if isinstance(_translation, gettext.GNUTranslations):
+		_translation.install()
 
-		global __enabled__
-		__enabled__ = True
+		global _enabled
+		_enabled = True
 
 def disable():
-	global __enabled__
-	__enabled__ = False
+	global _enabled
+	_enabled = False
 
-	if __installed__:
+	if _installed:
 		gettext.NullTranslations().install()

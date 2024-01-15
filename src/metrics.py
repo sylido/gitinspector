@@ -22,10 +22,10 @@ import subprocess
 from .changes import FileDiff
 from . import comment, filtering, interval
 
-__metric_eloc__ = {"java": 500, "c": 500, "cpp": 500, "cs": 500, "h": 300, "hpp": 300, "php": 500, "py": 500, "glsl": 1000,
+metric_eloc = {"java": 500, "c": 500, "cpp": 500, "cs": 500, "h": 300, "hpp": 300, "php": 500, "py": 500, "glsl": 1000,
                    "rb": 500, "js": 500, "sql": 1000, "xml": 1000}
 
-__metric_cc_tokens__ = [[["java", "js", "c", "cc", "cpp"], ["else", r"for\s+\(.*\)", r"if\s+\(.*\)", r"case\s+\w+:",
+_metric_cc_tokens = [[["java", "js", "c", "cc", "cpp"], ["else", r"for\s+\(.*\)", r"if\s+\(.*\)", r"case\s+\w+:",
                                                             "default:", r"while\s+\(.*\)"],
                                                            ["assert", "break", "continue", "return"]],
                        [["cs"], ["else", r"for\s+\(.*\)", r"foreach\s+\(.*\)", r"goto\s+\w+:", r"if\s+\(.*\)", r"case\s+\w+:",
@@ -62,7 +62,7 @@ class MetricsLogic(object):
 					lines = MetricsLogic.get_eloc(file_r, extension)
 					cycc = MetricsLogic.get_cyclomatic_complexity(file_r, extension)
 
-					if __metric_eloc__.get(extension, None) != None and __metric_eloc__[extension] < lines:
+					if metric_eloc.get(extension, None) != None and metric_eloc[extension] < lines:
 						self.eloc[i.strip()] = lines
 
 					if METRIC_CYCLOMATIC_COMPLEXITY_THRESHOLD < cycc:
@@ -88,7 +88,7 @@ class MetricsLogic(object):
 		entry_tokens = None
 		exit_tokens = None
 
-		for i in __metric_cc_tokens__:
+		for i in _metric_cc_tokens:
 			if extension in i[0]:
 				entry_tokens = i[1]
 				exit_tokens = i[2]

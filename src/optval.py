@@ -24,14 +24,14 @@ class InvalidOptionArgument(Exception):
 		super(InvalidOptionArgument, self).__init__(msg)
 		self.msg = msg
 
-def __find_arg_in_options__(arg, options):
+def _find_arg_in_options(arg, options):
 	for opt in options:
 		if opt[0].find(arg) == 0:
 			return opt
 
 	return None
 
-def __find_options_to_extend__(long_options):
+def _find_options_to_extend(long_options):
 	options_to_extend = []
 
 	for num, arg in enumerate(long_options):
@@ -45,10 +45,10 @@ def __find_options_to_extend__(long_options):
 # This is a duplicate of gnu_getopt, but with support for optional arguments in long options, in the form; "arg:default_value".
 
 def gnu_getopt(args, options, long_options):
-	options_to_extend = __find_options_to_extend__(long_options)
+	options_to_extend = _find_options_to_extend(long_options)
 
 	for num, arg in enumerate(args):
-		opt = __find_arg_in_options__(arg, options_to_extend)
+		opt = _find_arg_in_options(arg, options_to_extend)
 		if opt:
 			args[num] = arg + "=" + opt[1]
 

@@ -19,21 +19,21 @@
 
 DEFAULT_EXTENSIONS = ["java", "c", "cc", "cpp", "h", "hh", "hpp", "py", "glsl", "rb", "js", "sql"]
 
-__extensions__ = DEFAULT_EXTENSIONS
-__located_extensions__ = set()
+_extensions = DEFAULT_EXTENSIONS
+_located_extensions = set()
 
 def get():
-	return __extensions__
+	return _extensions
 
 def define(string):
-	global __extensions__
-	__extensions__ = string.split(",")
+	global _extensions
+	_extensions = string.split(",")
 
 def add_located(string):
 	if len(string) == 0:
-		__located_extensions__.add("*")
+		_located_extensions.add("*")
 	else:
-		__located_extensions__.add(string)
+		_located_extensions.add(string)
 
 def get_located():
-	return __located_extensions__
+	return _located_extensions

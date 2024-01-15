@@ -33,14 +33,14 @@ class BlameEntry(object):
 	skew = 0 # Used when calculating average code age.
 	comments = 0
 
-__thread_lock__ = threading.BoundedSemaphore(NUM_THREADS)
-__blame_lock__ = threading.Lock()
+_thread_lock = threading.BoundedSemaphore(NUM_THREADS)
+_blame_lock = threading.Lock()
 
 AVG_DAYS_PER_MONTH = 30.4167
 
 class BlameThread(threading.Thread):
 	def __init__(self, useweeks, changes, blame_command, extension, blames, filename):
-		__thread_lock__.acquire() # Lock controlling the number of threads running
+		_thread_lock.acquire() # Lock controlling the number of threads running
 		threading.Thread.__init__(self)
 
 		self.useweeks = useweeks
@@ -52,14 +52,14 @@ class BlameThread(threading.Thread):
 
 		self.is_inside_comment = False
 
-	def __clear_blamechunk_info__(self):
+	def _clear_blamechunk_info(self):
 		self.blamechunk_email = None
 		self.blamechunk_is_last = False
 		self.blamechunk_is_prior = False
 		self.blamechunk_revision = None
 		self.blamechunk_time = None
 
-	def __handle_blamechunk_content__(self, content):
+	def _handle_blamechunk_content(self, content):
 		author = None
 		(comments, self.is_inside_comment) = comment.handle_comment_block(self.is_inside_comment, self.extension, content)
 
@@ -74,7 +74,7 @@ class BlameThread(threading.Thread):
 		       filtering.set_filtered(self.blamechunk_email, "email") and not \
 		       filtering.set_filtered(self.blamechunk_revision, "revision"):
 
-			__blame_lock__.acquire() # Global lock used to protect calls from here...
+			_blame_lock.acquire() # Global lock used to protect calls from here...
 
 			if self.blames.get((author, self.filename), None) == None:
 				self.blames[(author, self.filename)] = BlameEntry()
@@ -86,14 +86,14 @@ class BlameThread(threading.Thread):
 				self.blames[(author, self.filename)].skew += ((self.changes.last_commit_date - self.blamechunk_time).days /
 				                                             (7.0 if self.useweeks else AVG_DAYS_PER_MONTH))
 
-			__blame_lock__.release() # ...to here.
+			_blame_lock.release() # ...to here.
 
 	def run(self):
 		git_blame_r = subprocess.Popen(self.blame_command, stdout=subprocess.PIPE).stdout
 		rows = git_blame_r.readlines()
 		git_blame_r.close()
 
-		self.__clear_blamechunk_info__()
+		self._clear_blamechunk_info()
 
 		#pylint: disable=W0201
 		for j in range(0, len(rows)):
@@ -101,8 +101,8 @@ class BlameThread(threading.Thread):
 			keyval = row.split(" ", 2)
 
 			if self.blamechunk_is_last:
-				self.__handle_blamechunk_content__(row)
-				self.__clear_blamechunk_info__()
+				self._handle_blamechunk_content(row)
+				self._clear_blamechunk_info()
 			elif keyval[0] == "boundary":
 				self.blamechunk_is_prior = True
 			elif keyval[0] == "author-mail":
@@ -114,7 +114,7 @@ class BlameThread(threading.Thread):
 			elif Blame.is_revision(keyval[0]):
 				self.blamechunk_revision = keyval[0]
 
-		__thread_lock__.release() # Lock controlling the number of threads running
+		_thread_lock.release() # Lock controlling the number of threads running
 
 PROGRESS_TEXT = N_("Checking how many rows belong to each author (2 of 2): {0:.0f}%")
 
@@ -152,18 +152,18 @@ class Blame(object):
 
 			# Make sure all threads have completed.
 			for i in range(0, NUM_THREADS):
-				__thread_lock__.acquire()
+				_thread_lock.acquire()
 
 			# We also have to release them for future use.
 			for i in range(0, NUM_THREADS):
-				__thread_lock__.release()
+				_thread_lock.release()
 
 	def __iadd__(self, other):
 		try:
 			self.blames.update(other.blames)
-			return self;
+			return self
 		except AttributeError:
-			return other;
+			return other
 
 	@staticmethod
 	def is_revision(string):

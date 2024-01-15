@@ -17,7 +17,6 @@
 # You should have received a copy of the GNU General Public License
 # along with gitinspector. If not, see <http://www.gnu.org/licenses/>.
 
-from __future__ import unicode_literals
 import os
 import subprocess
 from . import extensions, filtering, format, interval, optval
@@ -28,7 +27,7 @@ class GitConfig(object):
 		self.repo = repo
 		self.global_only = global_only
 
-	def __read_git_config__(self, variable):
+	def _read_git_config(self, variable):
 		previous_directory = os.getcwd()
 		os.chdir(self.repo)
 		setting = subprocess.Popen(filter(None, ["git", "config", "--global" if self.global_only else "",
@@ -43,48 +42,48 @@ class GitConfig(object):
 
 		return setting
 
-	def __read_git_config_bool__(self, variable):
+	def _read_git_config_bool(self, variable):
 		try:
-			variable = self.__read_git_config__(variable)
+			variable = self._read_git_config(variable)
 			return optval.get_boolean_argument(False if variable == "" else variable)
 		except optval.InvalidOptionArgument:
 			return False
 
-	def __read_git_config_string__(self, variable):
-		string = self.__read_git_config__(variable)
+	def _read_git_config_string(self, variable):
+		string = self._read_git_config(variable)
 		return (True, string) if len(string) > 0 else (False, None)
 
 	def read(self):
-		var = self.__read_git_config_string__("file-types")
+		var = self._read_git_config_string("file-types")
 		if var[0]:
 			extensions.define(var[1])
 
-		var = self.__read_git_config_string__("exclude")
+		var = self._read_git_config_string("exclude")
 		if var[0]:
 			filtering.add(var[1])
 
-		var = self.__read_git_config_string__("format")
+		var = self._read_git_config_string("format")
 		if var[0] and not format.select(var[1]):
 			raise format.InvalidFormatError(_("specified output format not supported."))
 
-		self.run.hard = self.__read_git_config_bool__("hard")
-		self.run.list_file_types = self.__read_git_config_bool__("list-file-types")
-		self.run.localize_output = self.__read_git_config_bool__("localize-output")
-		self.run.metrics = self.__read_git_config_bool__("metrics")
-		self.run.responsibilities = self.__read_git_config_bool__("responsibilities")
-		self.run.useweeks = self.__read_git_config_bool__("weeks")
+		self.run.hard = self._read_git_config_bool("hard")
+		self.run.list_file_types = self._read_git_config_bool("list-file-types")
+		self.run.localize_output = self._read_git_config_bool("localize-output")
+		self.run.metrics = self._read_git_config_bool("metrics")
+		self.run.responsibilities = self._read_git_config_bool("responsibilities")
+		self.run.useweeks = self._read_git_config_bool("weeks")
 
-		var = self.__read_git_config_string__("since")
+		var = self._read_git_config_string("since")
 		if var[0]:
 			interval.set_since(var[1])
 
-		var = self.__read_git_config_string__("until")
+		var = self._read_git_config_string("until")
 		if var[0]:
 			interval.set_until(var[1])
 
-		self.run.timeline = self.__read_git_config_bool__("timeline")
+		self.run.timeline = self._read_git_config_bool("timeline")
 
-		if self.__read_git_config_bool__("grading"):
+		if self._read_git_config_bool("grading"):
 			self.run.hard = True
 			self.run.list_file_types = True
 			self.run.metrics = True
