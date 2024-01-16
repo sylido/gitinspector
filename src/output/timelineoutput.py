@@ -18,12 +18,13 @@
 # along with gitinspector. If not, see <http://www.gnu.org/licenses/>.
 
 import textwrap
-from ..localization import N_
-from .. import format, gravatar, terminal, timeline
+
+from . import avatar
+from .. import format, terminal, timeline
 from .outputable import Outputable
 
-TIMELINE_INFO_TEXT = N_("The following history timeline has been gathered from the repository")
-MODIFIED_ROWS_TEXT = N_("Modified Rows:")
+TIMELINE_INFO_TEXT = "The following history timeline has been gathered from the repository"
+MODIFIED_ROWS_TEXT = "Modified Rows:"
 
 def _output_row__text(timeline_data, periods, names):
 	print("\n" + terminal.bold + terminal.ljust(_("Author"), 20), end=" ")
@@ -71,7 +72,7 @@ def _output_row_html(timeline_data, periods, names):
 			timeline_xml += "<tr" + (" class=\"odd\">" if i % 2 == 1 else ">")
 
 			if format.get_selected() == "html":
-				timeline_xml += "<td><img src=\"{0}\"/>{1}</td>".format(gravatar.get_url(name[1]), name[0])
+				timeline_xml += "<td><img src=\"{0}\"/>{1}</td>".format(avatar.get_url(name[1]), name[0])
 			else:
 				timeline_xml += "<td>" + name[0] + "</td>"
 
@@ -156,7 +157,7 @@ class TimelineOutput(Outputable):
 
 						authors_json += "{\n\t\t\t\t\t\"name\": \"" + name[0] + "\",\n"
 						authors_json += "\t\t\t\t\t\"email\": \"" + name[1] + "\",\n"
-						authors_json += "\t\t\t\t\t\"gravatar\": \"" + gravatar.get_url(name[1]) + "\",\n"
+						authors_json += "\t\t\t\t\t\"gravatar\": \"" + avatar.get_url(name[1]) + "\",\n"
 						authors_json += "\t\t\t\t\t\"work\": \"" + signs_str + "\"\n\t\t\t\t},"
 				else:
 					authors_json = authors_json[:-1]
@@ -195,7 +196,7 @@ class TimelineOutput(Outputable):
 
 						authors_xml += "\t\t\t\t\t<author>\n\t\t\t\t\t\t<name>" + name[0] + "</name>\n"
 						authors_xml += "\t\t\t\t\t\t<email>" + name[1] + "</email>\n"
-						authors_xml += "\t\t\t\t\t\t<gravatar>" + gravatar.get_url(name[1]) + "</gravatar>\n"
+						authors_xml += "\t\t\t\t\t\t<gravatar>" + avatar.get_url(name[1]) + "</gravatar>\n"
 						authors_xml += "\t\t\t\t\t\t<work>" + signs_str + "</work>\n\t\t\t\t\t</author>\n"
 
 				authors_xml += "\t\t\t\t</authors>\n"

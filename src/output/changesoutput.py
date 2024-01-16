@@ -19,12 +19,13 @@
 
 import json
 import textwrap
-from ..localization import N_
-from .. import format, gravatar, terminal
+
+from . import avatar
+from .. import format, terminal
 from .outputable import Outputable
 
-HISTORICAL_INFO_TEXT = N_("The following historical commit information, by author, was found")
-NO_COMMITED_FILES_TEXT = N_("No commited files with the specified extensions were found")
+HISTORICAL_INFO_TEXT = "The following historical commit information, by author, was found"
+NO_COMMITED_FILES_TEXT = "No commited files with the specified extensions were found"
 
 class ChangesOutput(Outputable):
 	def __init__(self, changes):
@@ -42,9 +43,9 @@ class ChangesOutput(Outputable):
 			total_changes += authorinfo_list.get(i).deletions
 
 		if authorinfo_list:
-			changes_xml += "<p>" + _(HISTORICAL_INFO_TEXT) + ".</p><div><table id=\"changes\" class=\"git\">"
+			changes_xml += "<p>" + HISTORICAL_INFO_TEXT + ".</p><div><table id=\"changes\" class=\"git\">"
 			changes_xml += "<thead><tr> <th>{0}</th> <th>{1}</th> <th>{2}</th> <th>{3}</th> <th>{4}</th>".format(
-			               _("Author"), _("Commits"), _("Insertions"), _("Deletions"), _("% of changes"))
+			               "Author", "Commits", "Insertions", "Deletions", "% of changes")
 			changes_xml += "</tr></thead><tbody>"
 
 			for i, entry in enumerate(sorted(authorinfo_list)):
@@ -55,7 +56,7 @@ class ChangesOutput(Outputable):
 
 				if format.get_selected() == "html":
 					changes_xml += "<td><img src=\"{0}\"/>{1}</td>".format(
-					               gravatar.get_url(self.changes.get_latest_email_by_author(entry)), entry)
+					               avatar.get_url(self.changes.get_latest_email_by_author(entry)), entry)
 				else:
 					changes_xml += "<td>" + entry + "</td>"
 
@@ -79,7 +80,7 @@ class ChangesOutput(Outputable):
 			changes_xml += "                show: true,"
 			changes_xml += "                combine: {"
 			changes_xml += "                    threshold: 0.01,"
-			changes_xml += "                    label: \"" + _("Minor Authors") + "\""
+			changes_xml += "                    label: \"" + "Minor Authors" + "\""
 			changes_xml += "                }"
 			changes_xml += "            }"
 			changes_xml += "        }, grid: {"
@@ -88,7 +89,7 @@ class ChangesOutput(Outputable):
 			changes_xml += "    });"
 			changes_xml += "</script>"
 		else:
-			changes_xml += "<p>" + _(NO_COMMITED_FILES_TEXT) + ".</p>"
+			changes_xml += "<p>" + NO_COMMITED_FILES_TEXT + ".</p>"
 
 		changes_xml += "</div></div>"
 		print(changes_xml)
@@ -102,7 +103,7 @@ class ChangesOutput(Outputable):
 			total_changes += authorinfo_list.get(i).deletions
 
 		if authorinfo_list:
-			message_json = "\t\t\t\"message\": \"" + _(HISTORICAL_INFO_TEXT) + "\",\n"
+			message_json = "\t\t\t\"message\": \"" + HISTORICAL_INFO_TEXT + "\",\n"
 			changes_json = ""
 
 			for i in sorted(authorinfo_list):
@@ -112,7 +113,7 @@ class ChangesOutput(Outputable):
 				percentage = 0 if total_changes == 0 else (authorinfo.insertions + authorinfo.deletions) / total_changes * 100
 				name_json = "\t\t\t\t\"name\": \"" + i + "\",\n"
 				email_json = "\t\t\t\t\"email\": \"" + author_email + "\",\n"
-				gravatar_json = "\t\t\t\t\"gravatar\": \"" + gravatar.get_url(author_email) + "\",\n"
+				gravatar_json = "\t\t\t\t\"gravatar\": \"" + avatar.get_url(author_email) + "\",\n"
 				commits_json = "\t\t\t\t\"commits\": " + str(authorinfo.commits) + ",\n"
 				insertions_json = "\t\t\t\t\"insertions\": " + str(authorinfo.insertions) + ",\n"
 				deletions_json = "\t\t\t\t\"deletions\": " + str(authorinfo.deletions) + ",\n"
@@ -126,7 +127,7 @@ class ChangesOutput(Outputable):
 
 			print("\t\t\"changes\": {\n" + message_json + "\t\t\t\"authors\": [\n\t\t\t" + changes_json + "]\n\t\t}", end="")
 		else:
-			print("\t\t\"exception\": \"" + _(NO_COMMITED_FILES_TEXT) + "\"")
+			print("\t\t\"exception\": \"" + NO_COMMITED_FILES_TEXT) + "\""
 
 	def output_text(self):
 		authorinfo_list = self.changes.get_authorinfo_list()
@@ -137,10 +138,10 @@ class ChangesOutput(Outputable):
 			total_changes += authorinfo_list.get(i).deletions
 
 		if authorinfo_list:
-			print(textwrap.fill(_(HISTORICAL_INFO_TEXT) + ":", width=terminal.get_size()[0]) + "\n")
-			terminal.printb(terminal.ljust(_("Author"), 21) + terminal.rjust(_("Commits"), 13) +
-			                terminal.rjust(_("Insertions"), 14) + terminal.rjust(_("Deletions"), 15) +
-					terminal.rjust(_("% of changes"), 16))
+			print(textwrap.fill(HISTORICAL_INFO_TEXT + ":", width=terminal.get_size()[0]) + "\n")
+			terminal.printb(terminal.ljust("Author", 21) + terminal.rjust("Commits", 13) +
+			                terminal.rjust("Insertions", 14) + terminal.rjust("Deletions", 15) +
+					terminal.rjust("% of changes", 16))
 
 			for i in sorted(authorinfo_list):
 				authorinfo = authorinfo_list.get(i)
@@ -152,7 +153,7 @@ class ChangesOutput(Outputable):
 				print(str(authorinfo.deletions).rjust(14), end=" ")
 				print("{0:.2f}".format(percentage).rjust(15))
 		else:
-			print(_(NO_COMMITED_FILES_TEXT) + ".")
+			print(NO_COMMITED_FILES_TEXT) + "."
 
 	def output_xml(self):
 		authorinfo_list = self.changes.get_authorinfo_list()
@@ -163,7 +164,7 @@ class ChangesOutput(Outputable):
 			total_changes += authorinfo_list.get(i).deletions
 
 		if authorinfo_list:
-			message_xml = "\t\t<message>" + _(HISTORICAL_INFO_TEXT) + "</message>\n"
+			message_xml = "\t\t<message>" + HISTORICAL_INFO_TEXT + "</message>\n"
 			changes_xml = ""
 
 			for i in sorted(authorinfo_list):
@@ -173,7 +174,7 @@ class ChangesOutput(Outputable):
 				percentage = 0 if total_changes == 0 else (authorinfo.insertions + authorinfo.deletions) / total_changes * 100
 				name_xml = "\t\t\t\t<name>" + i + "</name>\n"
 				email_xml = "\t\t\t\t<email>" + author_email + "</email>\n"
-				gravatar_xml = "\t\t\t\t<gravatar>" + gravatar.get_url(author_email) + "</gravatar>\n"
+				gravatar_xml = "\t\t\t\t<gravatar>" + avatar.get_url(author_email) + "</gravatar>\n"
 				commits_xml = "\t\t\t\t<commits>" + str(authorinfo.commits) + "</commits>\n"
 				insertions_xml = "\t\t\t\t<insertions>" + str(authorinfo.insertions) + "</insertions>\n"
 				deletions_xml = "\t\t\t\t<deletions>" + str(authorinfo.deletions) + "</deletions>\n"
@@ -184,4 +185,4 @@ class ChangesOutput(Outputable):
 
 			print("\t<changes>\n" + message_xml + "\t\t<authors>\n" + changes_xml + "\t\t</authors>\n\t</changes>")
 		else:
-			print("\t<changes>\n\t\t<exception>" + _(NO_COMMITED_FILES_TEXT) + "</exception>\n\t</changes>")
+			print("\t<changes>\n\t\t<exception>" + NO_COMMITED_FILES_TEXT) + "</exception>\n\t</changes>"

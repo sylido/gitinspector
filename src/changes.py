@@ -23,7 +23,6 @@ import multiprocessing
 import os
 import subprocess
 import threading
-from .localization import N_
 from . import extensions, filtering, format, interval, terminal
 
 CHANGES_PER_THREAD = 200
@@ -172,7 +171,7 @@ class ChangesThread(threading.Thread):
 		_changes_lock.release() # ...to here.
 		_thread_lock.release() # Lock controlling the number of threads running
 
-PROGRESS_TEXT = N_("Fetching and calculating primary statistics (1 of 2): {0:.0f}%")
+PROGRESS_TEXT = "Fetching and calculating primary statistics (1 of 2): {0:.0f}%"
 
 class Changes(object):
 	authors = {}
@@ -190,7 +189,7 @@ class Changes(object):
 		git_rev_list_p.stdout.close()
 
 		if git_rev_list_p.returncode == 0 and len(lines) > 0:
-			progress_text = _(PROGRESS_TEXT)
+			progress_text = PROGRESS_TEXT
 			if repo != None:
 				progress_text = "[%s] " % repo.name + progress_text
 

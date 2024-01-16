@@ -80,13 +80,13 @@ def clear_row():
 
 def skip_escapes(skip):
 	if skip:
-		global _bold
-		global _normal
-		_bold = ""
-		_normal = ""
+		global bold
+		global normal
+		bold = ""
+		normal = ""
 
 def printb(string):
-	print(_bold + string + _normal)
+	print(bold + string + normal)
 
 def get_size():
 	width = 0
@@ -126,8 +126,8 @@ def convert_command_line_to_utf8():
 
 def check_terminal_encoding():
 	if sys.stdout.isatty() and (sys.stdout.encoding == None or sys.stdin.encoding == None):
-		print(_("WARNING: The terminal encoding is not correctly configured. gitinspector might malfunction. "
-		        "The encoding can be configured with the environment variable 'PYTHONIOENCODING'."), file=sys.stderr)
+		print("WARNING: The terminal encoding is not correctly configured. gitinspector might malfunction. "
+		      "The encoding can be configured with the environment variable 'PYTHONIOENCODING'.", file=sys.stderr)
 
 def get_excess_column_count(string):
 	width_mapping = {'F': 2, 'H': 1, 'W': 2, 'Na': 1, 'N': 1, 'A': 1}

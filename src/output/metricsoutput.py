@@ -18,15 +18,14 @@
 # along with gitinspector. If not, see <http://www.gnu.org/licenses/>.
 
 from ..changes import FileDiff
-from ..localization import N_
 from ..metrics import (metric_eloc, METRIC_CYCLOMATIC_COMPLEXITY_THRESHOLD, METRIC_CYCLOMATIC_COMPLEXITY_DENSITY_THRESHOLD)
 from .outputable import Outputable
 
-ELOC_INFO_TEXT = N_("The following files are suspiciously big (in order of severity)")
-CYCLOMATIC_COMPLEXITY_TEXT = N_("The following files have an elevated cyclomatic complexity (in order of severity)")
-CYCLOMATIC_COMPLEXITY_DENSITY_TEXT = N_("The following files have an elevated cyclomatic complexity density " \
-                                        "(in order of severity)")
-METRICS_MISSING_INFO_TEXT = N_("No metrics violations were found in the repository")
+ELOC_INFO_TEXT = "The following files are suspiciously big (in order of severity)"
+CYCLOMATIC_COMPLEXITY_TEXT = "The following files have an elevated cyclomatic complexity (in order of severity)"
+CYCLOMATIC_COMPLEXITY_DENSITY_TEXT = "The following files have an elevated cyclomatic complexity density " \
+                                        "(in order of severity)"
+METRICS_MISSING_INFO_TEXT = "No metrics violations were found in the repository"
 
 METRICS_VIOLATION_SCORES = [[1.0, "minimal"], [1.25, "minor"], [1.5, "medium"], [2.0, "bad"], [3.0, "severe"]]
 
@@ -42,51 +41,51 @@ class MetricsOutput(Outputable):
 
 	def output_text(self):
 		if not self.metrics.eloc and not self.metrics.cyclomatic_complexity and not self.metrics.cyclomatic_complexity_density:
-			print("\n" + _(METRICS_MISSING_INFO_TEXT) + ".")
+			print("\n" + METRICS_MISSING_INFO_TEXT + ".")
 
 		if self.metrics.eloc:
-			print("\n" + _(ELOC_INFO_TEXT) + ":")
+			print("\n" + ELOC_INFO_TEXT + ":")
 			for i in sorted(set([(j, i) for (i, j) in self.metrics.eloc.items()]), reverse=True):
-				print(_("{0} ({1} estimated lines of code)").format(i[1], str(i[0])))
+				print("{0} ({1} estimated lines of code)").format(i[1], str(i[0]))
 
 		if self.metrics.cyclomatic_complexity:
-			print("\n" + _(CYCLOMATIC_COMPLEXITY_TEXT) + ":")
+			print("\n" + CYCLOMATIC_COMPLEXITY_TEXT + ":")
 			for i in sorted(set([(j, i) for (i, j) in self.metrics.cyclomatic_complexity.items()]), reverse=True):
-				print(_("{0} ({1} in cyclomatic complexity)").format(i[1], str(i[0])))
+				print("{0} ({1} in cyclomatic complexity)").format(i[1], str(i[0]))
 
 		if self.metrics.cyclomatic_complexity_density:
-			print("\n" + _(CYCLOMATIC_COMPLEXITY_DENSITY_TEXT) + ":")
+			print("\n" + CYCLOMATIC_COMPLEXITY_DENSITY_TEXT + ":")
 			for i in sorted(set([(j, i) for (i, j) in self.metrics.cyclomatic_complexity_density.items()]), reverse=True):
-				print(_("{0} ({1:.3f} in cyclomatic complexity density)").format(i[1], i[0]))
+				print("{0} ({1:.3f} in cyclomatic complexity density)").format(i[1], i[0])
 
 	def output_html(self):
 		metrics_xml = "<div><div class=\"box\" id=\"metrics\">"
 
 		if not self.metrics.eloc and not self.metrics.cyclomatic_complexity and not self.metrics.cyclomatic_complexity_density:
-			metrics_xml += "<p>" + _(METRICS_MISSING_INFO_TEXT) + ".</p>"
+			metrics_xml += "<p>" + METRICS_MISSING_INFO_TEXT + ".</p>"
 
 		if self.metrics.eloc:
-			metrics_xml += "<div><h4>" + _(ELOC_INFO_TEXT) + ".</h4>"
+			metrics_xml += "<div><h4>" + ELOC_INFO_TEXT + ".</h4>"
 			for num, i in enumerate(sorted(set([(j, i) for (i, j) in self.metrics.eloc.items()]), reverse=True)):
 				metrics_xml += "<div class=\"" + _get_metrics_score(metric_eloc[FileDiff.get_extension(i[1])], i[0]) + \
 				               (" odd\">" if num % 2 == 1 else "\">") + \
-				               _("{0} ({1} estimated lines of code)").format(i[1], str(i[0])) + "</div>"
+				               "{0} ({1} estimated lines of code)".format(i[1], str(i[0])) + "</div>"
 			metrics_xml += "</div>"
 
 		if self.metrics.cyclomatic_complexity:
-			metrics_xml += "<div><h4>" +  _(CYCLOMATIC_COMPLEXITY_TEXT) + "</h4>"
+			metrics_xml += "<div><h4>" +  CYCLOMATIC_COMPLEXITY_TEXT + "</h4>"
 			for num, i in enumerate(sorted(set([(j, i) for (i, j) in self.metrics.cyclomatic_complexity.items()]), reverse=True)):
 				metrics_xml += "<div class=\"" + _get_metrics_score(METRIC_CYCLOMATIC_COMPLEXITY_THRESHOLD, i[0]) + \
 				               (" odd\">" if num % 2 == 1 else "\">") + \
-				               _("{0} ({1} in cyclomatic complexity)").format(i[1], str(i[0])) + "</div>"
+				               "{0} ({1} in cyclomatic complexity)".format(i[1], str(i[0])) + "</div>"
 			metrics_xml += "</div>"
 
 		if self.metrics.cyclomatic_complexity_density:
-			metrics_xml += "<div><h4>" +  _(CYCLOMATIC_COMPLEXITY_DENSITY_TEXT) + "</h4>"
+			metrics_xml += "<div><h4>" +  CYCLOMATIC_COMPLEXITY_DENSITY_TEXT + "</h4>"
 			for num, i in enumerate(sorted(set([(j, i) for (i, j) in self.metrics.cyclomatic_complexity_density.items()]), reverse=True)):
 				metrics_xml += "<div class=\"" + _get_metrics_score(METRIC_CYCLOMATIC_COMPLEXITY_DENSITY_THRESHOLD, i[0]) + \
 				               (" odd\">" if num % 2 == 1 else "\">") + \
-				               _("{0} ({1:.3f} in cyclomatic complexity density)").format(i[1], i[0]) + "</div>"
+				               "{0} ({1:.3f} in cyclomatic complexity density)".format(i[1], i[0]) + "</div>"
 			metrics_xml += "</div>"
 
 		metrics_xml += "</div></div>"
@@ -94,7 +93,7 @@ class MetricsOutput(Outputable):
 
 	def output_json(self):
 		if not self.metrics.eloc and not self.metrics.cyclomatic_complexity and not self.metrics.cyclomatic_complexity_density:
-			print(",\n\t\t\"metrics\": {\n\t\t\t\"message\": \"" + _(METRICS_MISSING_INFO_TEXT) + "\"\n\t\t}", end="")
+			print(",\n\t\t\"metrics\": {\n\t\t\t\"message\": \"" + METRICS_MISSING_INFO_TEXT + "\"\n\t\t}", end="")
 		else:
 			eloc_json = ""
 
@@ -130,7 +129,7 @@ class MetricsOutput(Outputable):
 			print(",\n\t\t\"metrics\": {\n\t\t\t\"violations\": [\n\t\t\t" + eloc_json + "]\n\t\t}", end="")
 	def output_xml(self):
 		if not self.metrics.eloc and not self.metrics.cyclomatic_complexity and not self.metrics.cyclomatic_complexity_density:
-			print("\t<metrics>\n\t\t<message>" + _(METRICS_MISSING_INFO_TEXT) + "</message>\n\t</metrics>")
+			print("\t<metrics>\n\t\t<message>" + METRICS_MISSING_INFO_TEXT + "</message>\n\t</metrics>")
 		else:
 			eloc_xml = ""
 

@@ -18,17 +18,16 @@
 # along with gitinspector. If not, see <http://www.gnu.org/licenses/>.
 
 import textwrap
-from ..localization import N_
 from ..filtering import filters, has_filtered
 from .. import terminal
 from .outputable import Outputable
 
-FILTERING_INFO_TEXT = N_("The following files were excluded from the statistics due to the specified exclusion patterns")
-FILTERING_AUTHOR_INFO_TEXT = N_("The following authors were excluded from the statistics due to the specified exclusion patterns")
-FILTERING_EMAIL_INFO_TEXT = N_("The authors with the following emails were excluded from the statistics due to the specified " \
-                               "exclusion patterns")
-FILTERING_COMMIT_INFO_TEXT = N_("The following commit revisions were excluded from the statistics due to the specified " \
-                                "exclusion patterns")
+FILTERING_INFO_TEXT = "The following files were excluded from the statistics due to the specified exclusion patterns"
+FILTERING_AUTHOR_INFO_TEXT = "The following authors were excluded from the statistics due to the specified exclusion patterns"
+FILTERING_EMAIL_INFO_TEXT = "The authors with the following emails were excluded from the statistics due to the specified " \
+                            "exclusion patterns"
+FILTERING_COMMIT_INFO_TEXT = "The following commit revisions were excluded from the statistics due to the specified " \
+                             "exclusion patterns"
 
 class FilteringOutput(Outputable):
 	@staticmethod
@@ -46,10 +45,10 @@ class FilteringOutput(Outputable):
 	def output_html(self):
 		if has_filtered():
 			filtering_xml = "<div><div class=\"box\">"
-			FilteringOutput._output_html_section(_(FILTERING_INFO_TEXT), filters["file"][1])
-			FilteringOutput._output_html_section(_(FILTERING_AUTHOR_INFO_TEXT), filters["author"][1])
-			FilteringOutput._output_html_section(_(FILTERING_EMAIL_INFO_TEXT), filters["email"][1])
-			FilteringOutput._output_html_section(_(FILTERING_COMMIT_INFO_TEXT), filters["revision"][1])
+			FilteringOutput._output_html_section(FILTERING_INFO_TEXT, filters["file"][1])
+			FilteringOutput._output_html_section(FILTERING_AUTHOR_INFO_TEXT, filters["author"][1])
+			FilteringOutput._output_html_section(FILTERING_EMAIL_INFO_TEXT, filters["email"][1])
+			FilteringOutput._output_html_section(FILTERING_COMMIT_INFO_TEXT, filters["revision"][1])
 			filtering_xml += "</div></div>"
 
 			print(filtering_xml)
@@ -73,10 +72,10 @@ class FilteringOutput(Outputable):
 	def output_json(self):
 		if has_filtered():
 			output = ",\n\t\t\"filtering\": {"
-			output += FilteringOutput._output_json_section(_(FILTERING_INFO_TEXT), filters["file"][1], "files")
-			output += FilteringOutput._output_json_section(_(FILTERING_AUTHOR_INFO_TEXT), filters["author"][1], "authors")
-			output += FilteringOutput._output_json_section(_(FILTERING_EMAIL_INFO_TEXT), filters["email"][1], "emails")
-			output += FilteringOutput._output_json_section(_(FILTERING_COMMIT_INFO_TEXT), filters["revision"][1], "revision")
+			output += FilteringOutput._output_json_section(FILTERING_INFO_TEXT, filters["file"][1], "files")
+			output += FilteringOutput._output_json_section(FILTERING_AUTHOR_INFO_TEXT, filters["author"][1], "authors")
+			output += FilteringOutput._output_json_section(FILTERING_EMAIL_INFO_TEXT, filters["email"][1], "emails")
+			output += FilteringOutput._output_json_section(FILTERING_COMMIT_INFO_TEXT, filters["revision"][1], "revision")
 			output = output[:-1]
 			output += "\n\t\t}"
 			print(output, end="")
@@ -91,10 +90,10 @@ class FilteringOutput(Outputable):
 				print("...%s" % i[-width+3:] if len(i) > width else i)
 
 	def output_text(self):
-		FilteringOutput._output_text_section(_(FILTERING_INFO_TEXT), filters["file"][1])
-		FilteringOutput._output_text_section(_(FILTERING_AUTHOR_INFO_TEXT), filters["author"][1])
-		FilteringOutput._output_text_section(_(FILTERING_EMAIL_INFO_TEXT), filters["email"][1])
-		FilteringOutput._output_text_section(_(FILTERING_COMMIT_INFO_TEXT), filters["revision"][1])
+		FilteringOutput._output_text_section(FILTERING_INFO_TEXT, filters["file"][1])
+		FilteringOutput._output_text_section(FILTERING_AUTHOR_INFO_TEXT, filters["author"][1])
+		FilteringOutput._output_text_section(FILTERING_EMAIL_INFO_TEXT, filters["email"][1])
+		FilteringOutput._output_text_section(FILTERING_COMMIT_INFO_TEXT, filters["revision"][1])
 
 	@staticmethod
 	def _output_xml_section(info_string, filtered, container_tagname):
@@ -112,8 +111,8 @@ class FilteringOutput(Outputable):
 	def output_xml(self):
 		if has_filtered():
 			print("\t<filtering>")
-			FilteringOutput._output_xml_section(_(FILTERING_INFO_TEXT), filters["file"][1], "files")
-			FilteringOutput._output_xml_section(_(FILTERING_AUTHOR_INFO_TEXT), filters["author"][1], "authors")
-			FilteringOutput._output_xml_section(_(FILTERING_EMAIL_INFO_TEXT), filters["email"][1], "emails")
-			FilteringOutput._output_xml_section(_(FILTERING_COMMIT_INFO_TEXT), filters["revision"][1], "revision")
+			FilteringOutput._output_xml_section(FILTERING_INFO_TEXT, filters["file"][1], "files")
+			FilteringOutput._output_xml_section(FILTERING_AUTHOR_INFO_TEXT, filters["author"][1], "authors")
+			FilteringOutput._output_xml_section(FILTERING_EMAIL_INFO_TEXT, filters["email"][1], "emails")
+			FilteringOutput._output_xml_section(FILTERING_COMMIT_INFO_TEXT, filters["revision"][1], "revision")
 			print("\t</filtering>")

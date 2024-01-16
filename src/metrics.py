@@ -20,7 +20,7 @@
 import re
 import subprocess
 from .changes import FileDiff
-from . import comment, filtering, interval
+from . import filtering, interval, languages
 
 metric_eloc = {"java": 500, "c": 500, "cpp": 500, "cs": 500, "h": 300, "hpp": 300, "php": 500, "py": 500, "glsl": 1000,
                    "rb": 500, "js": 500, "sql": 1000, "xml": 1000}
@@ -96,9 +96,9 @@ class MetricsLogic(object):
 		if entry_tokens or exit_tokens:
 			for i in file_r:
 				i = i.decode("utf-8", "replace")
-				(_, is_inside_comment) = comment.handle_comment_block(is_inside_comment, extension, i)
+				(_, is_inside_comment) = languages.handle_comment_block(is_inside_comment, extension, i)
 
-				if not is_inside_comment and not comment.is_comment(extension, i):
+				if not is_inside_comment and not languages.is_comment(extension, i):
 					for j in entry_tokens:
 						if re.search(j, i, re.DOTALL):
 							cc_counter += 2
@@ -116,9 +116,9 @@ class MetricsLogic(object):
 
 		for i in file_r:
 			i = i.decode("utf-8", "replace")
-			(_, is_inside_comment) = comment.handle_comment_block(is_inside_comment, extension, i)
+			(_, is_inside_comment) = languages.handle_comment_block(is_inside_comment, extension, i)
 
-			if not is_inside_comment and not comment.is_comment(extension, i):
+			if not is_inside_comment and not languages.is_comment(extension, i):
 				eloc_counter += 1
 
 		return eloc_counter

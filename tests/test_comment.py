@@ -19,7 +19,7 @@
 
 import os
 import unittest2
-import src.comment
+import languages
 
 def __test_extension__(commented_file, extension):
 	base = os.path.dirname(os.path.realpath(__file__))
@@ -31,8 +31,8 @@ def __test_extension__(commented_file, extension):
 	comment_counter = 0
 	for i in tex:
 		i = i.decode("utf-8", "replace")
-		(_, is_inside_comment) = src.comment.handle_comment_block(is_inside_comment, extension, i)
-		if is_inside_comment or src.comment.is_comment(extension, i):
+		(_, is_inside_comment) = src.codelang.handle_comment_block(is_inside_comment, extension, i)
+		if is_inside_comment or src.codelang.is_comment(extension, i):
 			comment_counter += 1
 
 	return comment_counter

@@ -21,7 +21,7 @@ import re
 import subprocess
 
 filters = {"file": [set(), set()], "author": [set(), set()], "email": [set(), set()], "revision": [set(), set()],
-               "message" : [set(), None]}
+           "message" : [set(), None]}
 
 class InvalidRegExpError(ValueError):
 	def __init__(self, msg):
@@ -84,5 +84,5 @@ def set_filtered(string, filter_type="file"):
 						filters[filter_type][1].add(string)
 					return True
 			except:
-				raise InvalidRegExpError(_("invalid regular expression specified"))
+				raise InvalidRegExpError("invalid regular expression specified")
 	return False

@@ -22,9 +22,8 @@ import multiprocessing
 import re
 import subprocess
 import threading
-from .localization import N_
 from .changes import FileDiff
-from . import comment, extensions, filtering, format, interval, terminal
+from . import extensions, filtering, format, interval, languages, terminal
 
 NUM_THREADS = multiprocessing.cpu_count()
 
@@ -61,7 +60,7 @@ class BlameThread(threading.Thread):
 
 	def _handle_blamechunk_content(self, content):
 		author = None
-		(comments, self.is_inside_comment) = comment.handle_comment_block(self.is_inside_comment, self.extension, content)
+		(comments, self.is_inside_comment) = languages.handle_comment_block(self.is_inside_comment, self.extension, content)
 
 		if self.blamechunk_is_prior and interval.get_since():
 			return
@@ -116,7 +115,7 @@ class BlameThread(threading.Thread):
 
 		_thread_lock.release() # Lock controlling the number of threads running
 
-PROGRESS_TEXT = N_("Checking how many rows belong to each author (2 of 2): {0:.0f}%")
+PROGRESS_TEXT = "Checking how many rows belong to each author (2 of 2): {0:.0f}%"
 
 class Blame(object):
 	def __init__(self, repo, hard, useweeks, changes):
@@ -127,7 +126,7 @@ class Blame(object):
 		ls_tree_p.stdout.close()
 
 		if ls_tree_p.returncode == 0:
-			progress_text = _(PROGRESS_TEXT)
+			progress_text = PROGRESS_TEXT
 
 			if repo != None:
 				progress_text = "[%s] " % repo.name + progress_text

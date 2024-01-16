@@ -20,13 +20,14 @@
 import json
 import sys
 import textwrap
-from ..localization import N_
-from .. import format, gravatar, terminal
+
+from . import avatar
+from .. import format, terminal
 from ..blame import Blame
 from .outputable import Outputable
 
-BLAME_INFO_TEXT = N_("Below are the number of rows from each author that have survived and are still "
-                     "intact in the current revision")
+BLAME_INFO_TEXT = "Below are the number of rows from each author that have survived and are still " \
+                  "intact in the current revision"
 
 class BlameOutput(Outputable):
 	def __init__(self, changes, blame):
@@ -39,9 +40,9 @@ class BlameOutput(Outputable):
 
 	def output_html(self):
 		blame_xml = "<div><div class=\"box\">"
-		blame_xml += "<p>" + _(BLAME_INFO_TEXT) + ".</p><div><table id=\"blame\" class=\"git\">"
+		blame_xml += "<p>" + BLAME_INFO_TEXT + ".</p><div><table id=\"blame\" class=\"git\">"
 		blame_xml += "<thead><tr> <th>{0}</th> <th>{1}</th> <th>{2}</th> <th>{3}</th> <th>{4}</th> </tr></thead>".format(
-		             _("Author"), _("Rows"), _("Stability"), _("Age"), _("% in comments"))
+		             "Author", "Rows", "Stability", "Age", "% in comments")
 		blame_xml += "<tbody>"
 		chart_data = ""
 		blames = sorted(self.blame.get_summed_blames().items())
@@ -56,7 +57,7 @@ class BlameOutput(Outputable):
 
 			if format.get_selected() == "html":
 				author_email = self.changes.get_latest_email_by_author(entry[0])
-				blame_xml += "<td><img src=\"{0}\"/>{1}</td>".format(gravatar.get_url(author_email), entry[0])
+				blame_xml += "<td><img src=\"{0}\"/>{1}</td>".format(avatar.get_url(author_email), entry[0])
 			else:
 				blame_xml += "<td>" + entry[0] + "</td>"
 
@@ -81,7 +82,7 @@ class BlameOutput(Outputable):
 		blame_xml += "                show: true,"
 		blame_xml += "                combine: {"
 		blame_xml += "                    threshold: 0.01,"
-		blame_xml += "                    label: \"" + _("Minor Authors") + "\""
+		blame_xml += "                    label: \"Minor Authors\""
 		blame_xml += "                }"
 		blame_xml += "            }"
 		blame_xml += "        }, grid: {"
@@ -93,7 +94,7 @@ class BlameOutput(Outputable):
 		print(blame_xml)
 
 	def output_json(self):
-		message_json = "\t\t\t\"message\": \"" + _(BLAME_INFO_TEXT) + "\",\n"
+		message_json = "\t\t\t\"message\": \"" + BLAME_INFO_TEXT + "\",\n"
 		blame_json = ""
 
 		for i in sorted(self.blame.get_summed_blames().items()):
@@ -101,7 +102,7 @@ class BlameOutput(Outputable):
 
 			name_json = "\t\t\t\t\"name\": \"" + i[0] + "\",\n"
 			email_json = "\t\t\t\t\"email\": \"" + author_email + "\",\n"
-			gravatar_json = "\t\t\t\t\"gravatar\": \"" + gravatar.get_url(author_email) + "\",\n"
+			gravatar_json = "\t\t\t\t\"gravatar\": \"" + avatar.get_url(author_email) + "\",\n"
 			rows_json = "\t\t\t\t\"rows\": " + str(i[1].rows) + ",\n"
 			stability_json = ("\t\t\t\t\"stability\": " + "{0:.1f}".format(Blame.get_stability(i[0], i[1].rows,
 			                  self.changes)) + ",\n")
@@ -119,9 +120,9 @@ class BlameOutput(Outputable):
 		if sys.stdout.isatty() and format.is_interactive_format():
 			terminal.clear_row()
 
-		print(textwrap.fill(_(BLAME_INFO_TEXT) + ":", width=terminal.get_size()[0]) + "\n")
-		terminal.printb(terminal.ljust(_("Author"), 21) + terminal.rjust(_("Rows"), 10) + terminal.rjust(_("Stability"), 15) +
-		                terminal.rjust(_("Age"), 13) + terminal.rjust(_("% in comments"), 20))
+		print(textwrap.fill(BLAME_INFO_TEXT + ":", width=terminal.get_size()[0]) + "\n")
+		terminal.printb(terminal.ljust("Author", 21) + terminal.rjust("Rows", 10) + terminal.rjust("Stability", 15) +
+		                terminal.rjust("Age", 13) + terminal.rjust("% in comments", 20))
 
 		for i in sorted(self.blame.get_summed_blames().items()):
 			print(terminal.ljust(i[0], 20)[0:20 - terminal.get_excess_column_count(i[0])], end=" ")
@@ -131,7 +132,7 @@ class BlameOutput(Outputable):
 			print("{0:.2f}".format(100.0 * i[1].comments / i[1].rows).rjust(19))
 
 	def output_xml(self):
-		message_xml = "\t\t<message>" + _(BLAME_INFO_TEXT) + "</message>\n"
+		message_xml = f"\t\t<message>{BLAME_INFO_TEXT}</message>\n"
 		blame_xml = ""
 
 		for i in sorted(self.blame.get_summed_blames().items()):
@@ -139,7 +140,7 @@ class BlameOutput(Outputable):
 
 			name_xml = "\t\t\t\t<name>" + i[0] + "</name>\n"
 			email_xml = "\t\t\t\t<email>" + author_email + "</email>\n"
-			gravatar_xml = "\t\t\t\t<gravatar>" + gravatar.get_url(author_email) + "</gravatar>\n"
+			gravatar_xml = "\t\t\t\t<gravatar>" + avatar.get_url(author_email) + "</gravatar>\n"
 			rows_xml = "\t\t\t\t<rows>" + str(i[1].rows) + "</rows>\n"
 			stability_xml = ("\t\t\t\t<stability>" + "{0:.1f}".format(Blame.get_stability(i[0], i[1].rows,
 			                 self.changes)) + "</stability>\n")
