@@ -23,7 +23,7 @@ import re
 import subprocess
 import threading
 from .changes import FileDiff
-from . import extensions, filtering, format, interval, languages, terminal
+from . import filtering, format, interval, languages, terminal
 
 NUM_THREADS = multiprocessing.cpu_count()
 

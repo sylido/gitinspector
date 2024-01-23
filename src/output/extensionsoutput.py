@@ -18,7 +18,7 @@
 # along with gitinspector. If not, see <http://www.gnu.org/licenses/>.
 
 import textwrap
-from .. import extensions, terminal
+from .. import terminal
 from .outputable import Outputable
 
 

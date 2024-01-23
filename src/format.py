@@ -22,7 +22,7 @@ import os
 import textwrap
 import time
 import zipfile
-from . import basedir, terminal
+from . import gitinspector, terminal
 
 available_formats = ["html", "htmlembedded", "json", "text", "xml"]
 DEFAULT_FORMAT = available_formats[3]
@@ -54,8 +54,8 @@ def _output_html_template(name):
 	file_r.close()
 	return template
 
-def _get_zip_file_content(name, file_name="/html/flot.zip"):
-	zip_file = zipfile.ZipFile(basedir.get_basedir() + file_name, "r")
+def _get_zip_file_content(name, file_name="flot.zip"):
+	zip_file = zipfile.ZipFile(gitinspector.get_res(file_name), "r")
 	content = zip_file.read(name)
 
 	zip_file.close()
@@ -71,10 +71,8 @@ INFO_MANY_REPOSITORIES = "Statistical information for the repositories '{0}' was
 def output_header(repos):
 	repos_string = ", ".join([repo.name for repo in repos])
 
-	import gitinspector # needed to fetch version
 	if selected_format == "html" or selected_format == "htmlembedded":
-		base = basedir.get_basedir()
-		html_header = _output_html_template(base + "/html/html.header")
+		html_header = _output_html_template(gitinspector.get_res('html.header'))
 		tablesorter_js = _get_zip_file_content("jquery.tablesorter.min.js",
 		                                          "/html/jquery.tablesorter.min.js.zip").encode("latin-1", "replace")
 		tablesorter_js = tablesorter_js.decode("utf-8", "ignore")
@@ -82,7 +80,7 @@ def output_header(repos):
 		pie_js = _get_zip_file_content("jquery.flot.pie.js")
 		resize_js = _get_zip_file_content("jquery.flot.resize.js")
 
-		logo_file = open(base + "/html/gitinspector_piclet.png", "rb")
+		logo_file = open(gitinspector.get_res('gitinspector_piclet.png'), "rb")
 		logo = logo_file.read()
 		logo_file.close()
 		logo = base64.b64encode(logo)
@@ -92,7 +90,7 @@ def output_header(repos):
 		else:
 			jquery_js = " src=\"https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js\">"
 
-		print(html_header.format(title="Repository statistics for '{0}'".format(repos_string),
+		print(html_header.format(title=f"Repository statistics for '{repos_string}'",
 		                         jquery=jquery_js,
 		                         jquery_tablesorter=tablesorter_js,
 		                         jquery_flot=flot_js,
@@ -146,8 +144,7 @@ def output_header(repos):
 
 def output_footer():
 	if selected_format == "html" or selected_format == "htmlembedded":
-		base = basedir.get_basedir()
-		html_footer = _output_html_template(base + "/html/html.footer")
+		html_footer = _output_html_template(gitinspector.get_res("html.footer"))
 		print(html_footer)
 	elif selected_format == "json":
 		print("\n\t}\n}")

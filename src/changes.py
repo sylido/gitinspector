@@ -23,7 +23,7 @@ import multiprocessing
 import os
 import subprocess
 import threading
-from . import extensions, filtering, format, interval, terminal
+from . import filtering, format, interval, terminal
 
 CHANGES_PER_THREAD = 200
 NUM_THREADS = multiprocessing.cpu_count()
@@ -58,10 +58,8 @@ class FileDiff(object):
 	def is_valid_extension(string):
 		extension = FileDiff.get_extension(string)
 
-		for i in extensions.get():
-			if (extension == "" and i == "*") or extension == i or i == '**':
-				return True
-		return False
+		# TODO exclude some extensions by request
+		return True
 
 class Commit(object):
 	def __init__(self, string):
@@ -160,7 +158,7 @@ class ChangesThread(threading.Thread):
 
 			if FileDiff.is_filediff_line(j) and not \
 			   filtering.set_filtered(FileDiff.get_filename(j)) and not is_filtered:
-				extensions.add_located(FileDiff.get_extension(j))
+				#extensions.add_located(FileDiff.get_extension(j))
 
 				if FileDiff.is_valid_extension(j):
 					found_valid_extension = True

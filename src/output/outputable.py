@@ -21,16 +21,16 @@ from .. import format
 
 class Outputable(object):
 	def output_html(self):
-		raise NotImplementedError(_("HTML output not yet supported in") + " \"" + self.__class__.__name__ + "\".")
+		raise NotImplementedError("HTML output not yet supported in" + " \"" + self.__class__.__name__ + "\".")
 
 	def output_json(self):
-		raise NotImplementedError(_("JSON output not yet supported in") + " \"" + self.__class__.__name__ + "\".")
+		raise NotImplementedError("JSON output not yet supported in" + " \"" + self.__class__.__name__ + "\".")
 
 	def output_text(self):
-		raise NotImplementedError(_("Text output not yet supported in") + " \"" + self.__class__.__name__ + "\".")
+		raise NotImplementedError("Text output not yet supported in" + " \"" + self.__class__.__name__ + "\".")
 
 	def output_xml(self):
-		raise NotImplementedError(_("XML output not yet supported in") + " \"" + self.__class__.__name__ + "\".")
+		raise NotImplementedError("XML output not yet supported in" + " \"" + self.__class__.__name__ + "\".")
 
 def output(outputable):
 	if format.get_selected() == "html" or format.get_selected() == "htmlembedded":

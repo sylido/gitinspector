@@ -17,8 +17,7 @@
 # You should have received a copy of the GNU General Public License
 # along with gitinspector. If not, see <http://www.gnu.org/licenses/>.
 
-import os
-import sys
+import os, sys
 from .blame import Blame
 from .changes import Changes
 from .format import available_formats, is_interactive_format, output_header, output_footer
@@ -38,6 +37,7 @@ def _config_error(msg):
 	print(msg, file=sys.stderr)
 	sys.exit(2)
 
+
 version = "0.5.0dev"
 def _version_output():
 	_doc = """Copyright © 2024. All rights reserved.
@@ -45,6 +45,14 @@ def _version_output():
 	This is free software: you are free to change and redistribute it.
 	There is NO WARRANTY, to the extent permitted by law."""
 	print("gitinspector {0}\n".format(version) + _doc)
+
+
+def get_res(file_name):
+	'''
+	Return the directory where gitinspector stores its resources.
+	'''
+	# should work (even for py2exe) so long as called from launcher ../gitinspector.py
+	return os.path.join(os.path.dirname(sys.argv[0]), "res", file_name)
 
 
 import subprocess
@@ -160,7 +168,3 @@ def main():
 		outputable.output(FilteringOutput())
 
 	output_footer()
-
-
-if __name__ == "__main__":
-	main()
