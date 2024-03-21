@@ -87,7 +87,7 @@ class Commit():
 			self.sha = commit_line[2]
 			self.author = commit_line[3].strip()
 			self.email = commit_line[4].strip()
-		else
+		else:
 		  self.timestamp = ""
 			self.date = ""
 			self.sha = ""
