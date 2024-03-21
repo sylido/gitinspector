@@ -77,13 +77,13 @@ class Commit():
 
 		commit_line = string.split("|")
 
-		if commit_line.__len__() == 5:
+		# if commit_line.__len__() == 5:
 
-			self.timestamp = commit_line[0] if commit_line[0] else date.today()
-			self.date = commit_line[1]
-			self.sha = commit_line[2]
-			self.author = commit_line[3].strip()
-			self.email = commit_line[4].strip()
+		self.timestamp = commit_line[0] if commit_line[0] else date.today()
+		self.date = commit_line[1]
+		self.sha = commit_line[2]
+		self.author = commit_line[3].strip()
+		self.email = commit_line[4].strip()
 
 	def __lt__(self, other):
 		return self.timestamp.__lt__(other.timestamp if other.timestamp else date.today())  # only used for sorting; we just consider the timestamp.
