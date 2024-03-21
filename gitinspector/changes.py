@@ -28,8 +28,9 @@ from .localization import N_
 from . import extensions, filtering, format, interval, terminal
 from datetime import date
 
-CHANGES_PER_THREAD = 200
-NUM_THREADS = multiprocessing.cpu_count()
+# NUM_THREADS = multiprocessing.cpu_count()
+CHANGES_PER_THREAD = 2000000
+NUM_THREADS        = 1
 
 __thread_lock__ = threading.BoundedSemaphore(NUM_THREADS)
 __changes_lock__ = threading.Lock()
