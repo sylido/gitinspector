@@ -87,6 +87,12 @@ class Commit():
 			self.sha = commit_line[2]
 			self.author = commit_line[3].strip()
 			self.email = commit_line[4].strip()
+		else
+		  self.timestamp = ""
+			self.date = ""
+			self.sha = ""
+			self.author = ""
+			self.email = ""
 
 	def __lt__(self, other):
 		return self.timestamp.__lt__(other.timestamp if other.timestamp else int(time.time()))  # only used for sorting; we just consider the timestamp.
@@ -181,6 +187,7 @@ class ChangesThread(threading.Thread):
 
 				found_valid_extension = False
 				is_filtered = False
+				print("this is a commit line ? ", j)
 				commit = Commit(j)
 
 				if Commit.is_commit_line(j) and (
