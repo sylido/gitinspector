@@ -72,9 +72,13 @@ class FileDiff():
 class Commit():
 	def __init__(self, string):
 		self.filediffs = []
+
+		print("commit string :", string)
+
 		commit_line = string.split("|")
 
 		if commit_line.__len__() == 5:
+
 			self.timestamp = commit_line[0] if commit_line[0] else date.today()
 			self.date = commit_line[1]
 			self.sha = commit_line[2]
