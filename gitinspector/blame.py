@@ -28,7 +28,9 @@ from .localization import N_
 from .changes import FileDiff
 from . import comment, extensions, filtering, format, interval, terminal
 
-NUM_THREADS = multiprocessing.cpu_count()
+# NUM_THREADS = multiprocessing.cpu_count()
+CHANGES_PER_THREAD = 2000000
+NUM_THREADS        = 1
 
 class BlameEntry(object):
 	rows = 0
