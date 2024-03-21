@@ -74,7 +74,7 @@ class Commit():
 		commit_line = string.split("|")
 
 		if commit_line.__len__() == 5:
-			self.timestamp = if commit_line[0] is None else date.today()
+			self.timestamp = commit_line[0] if commit_line[0] else date.today()
 			self.date = commit_line[1]
 			self.sha = commit_line[2]
 			self.author = commit_line[3].strip()
