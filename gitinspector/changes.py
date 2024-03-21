@@ -28,9 +28,9 @@ from .localization import N_
 from . import extensions, filtering, format, interval, terminal
 from datetime import date
 
-# NUM_THREADS = multiprocessing.cpu_count()
-CHANGES_PER_THREAD = 2000000
-NUM_THREADS        = 1
+CHANGES_PER_THREAD = 200
+NUM_THREADS        = multiprocessing.cpu_count()
+# NUM_THREADS        = 1
 
 __thread_lock__ = threading.BoundedSemaphore(NUM_THREADS)
 __changes_lock__ = threading.Lock()
@@ -86,7 +86,7 @@ class Commit():
 			self.email = commit_line[4].strip()
 
 	def __lt__(self, other):
-		return self.timestamp.__lt__(other.timestamp)  # only used for sorting; we just consider the timestamp.
+		return self.timestamp.__lt__(other.timestamp if other.timestamp else date.today())  # only used for sorting; we just consider the timestamp.
 
 	def add_filediff(self, filediff):
 		self.filediffs.append(filediff)
