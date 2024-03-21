@@ -26,6 +26,7 @@ import subprocess
 import threading
 from .localization import N_
 from . import extensions, filtering, format, interval, terminal
+from datetime import date
 
 CHANGES_PER_THREAD = 200
 NUM_THREADS = multiprocessing.cpu_count()
@@ -73,7 +74,7 @@ class Commit():
 		commit_line = string.split("|")
 
 		if commit_line.__len__() == 5:
-			self.timestamp = commit_line[0]
+			self.timestamp = if commit_line[0] is None else date.today()
 			self.date = commit_line[1]
 			self.sha = commit_line[2]
 			self.author = commit_line[3].strip()
