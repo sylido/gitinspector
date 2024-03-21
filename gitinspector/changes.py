@@ -26,7 +26,8 @@ import subprocess
 import threading
 from .localization import N_
 from . import extensions, filtering, format, interval, terminal
-from datetime import date
+import time
+import re
 
 CHANGES_PER_THREAD = 200
 NUM_THREADS        = multiprocessing.cpu_count()
@@ -74,19 +75,21 @@ class Commit():
 		self.filediffs = []
 
 		print("commit string :", string)
+		pattern = re.compile("^\d{10}")
 
 		commit_line = string.split("|")
 
 		# if commit_line.__len__() == 5:
-
-		self.timestamp = commit_line[0] if commit_line[0] else date.today()
-		self.date = commit_line[1]
-		self.sha = commit_line[2]
-		self.author = commit_line[3].strip()
-		self.email = commit_line[4].strip()
+		# match by this instead
+		if pattern.match(string):
+			self.timestamp = commit_line[0] if commit_line[0] else int(time.time())
+			self.date = commit_line[1]
+			self.sha = commit_line[2]
+			self.author = commit_line[3].strip()
+			self.email = commit_line[4].strip()
 
 	def __lt__(self, other):
-		return self.timestamp.__lt__(other.timestamp if other.timestamp else date.today())  # only used for sorting; we just consider the timestamp.
+		return self.timestamp.__lt__(other.timestamp if other.timestamp else int(time.time()))  # only used for sorting; we just consider the timestamp.
 
 	def add_filediff(self, filediff):
 		self.filediffs.append(filediff)
