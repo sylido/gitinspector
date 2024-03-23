@@ -23,18 +23,18 @@ import datetime
 
 class TimelineData():
 	def __init__(self, changes, useweeks):
-		authordateinfo_list = sorted(changes.get_authordateinfo_list().items())
-		self.changes = changes
-		self.entries = {}
+		authordateinfo_list          = sorted(changes.get_authordateinfo_list().items())
+		self.changes                 = changes
+		self.entries                 = {}
 		self.total_changes_by_period = {}
-		self.useweeks = useweeks
+		self.useweeks                = useweeks
 
 		for i in authordateinfo_list:
 			key = None
 
 			if useweeks:
 				yearweek = datetime.date(int(i[0][0][0:4]), int(i[0][0][5:7]), int(i[0][0][8:10])).isocalendar()
-				key = (i[0][1], str(yearweek[0]) + "W" + "{0:02d}".format(yearweek[1]))
+				key      = (i[0][1], str(yearweek[0]) + "W" + "{0:02d}".format(yearweek[1]))
 			else:
 				key = (i[0][1], i[0][0][0:7])
 
@@ -42,17 +42,17 @@ class TimelineData():
 				self.entries[key] = i[1]
 			else:
 				self.entries[key].insertions += i[1].insertions
-				self.entries[key].deletions += i[1].deletions
+				self.entries[key].deletions  += i[1].deletions
 
 		for period in self.get_periods():
 			total_insertions = 0
-			total_deletions = 0
+			total_deletions  = 0
 
 			for author in self.get_authors():
 				entry = self.entries.get((author[0], period), None)
 				if entry is not None:
 					total_insertions += entry.insertions
-					total_deletions += entry.deletions
+					total_deletions  += entry.deletions
 
 			self.total_changes_by_period[period] = (total_insertions, total_deletions, total_insertions + total_deletions)
 

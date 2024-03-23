@@ -39,54 +39,64 @@ class ResponsibilitiesOutput(Outputable):
 		Outputable.__init__(self)
 
 	def output_text(self):
-		print("\n" + textwrap.fill(_(RESPONSIBILITIES_INFO_TEXT) + ":", width=terminal.get_size()[0]))
+		res = ""
+		# print("\n" + textwrap.fill(_(RESPONSIBILITIES_INFO_TEXT) + ":", width=terminal.get_size()[0]))
+		res += "\n" + textwrap.fill(_(RESPONSIBILITIES_INFO_TEXT) + ":", width=terminal.get_size()[0])
 
 		for i in sorted(set(i[0] for i in self.blame.blames)):
 			responsibilities = sorted(((i[1], i[0]) for i in resp.Responsibilities.get(self.blame, i)), reverse=True)
 
 			if responsibilities:
-				print("\n" + i, _(MOSTLY_RESPONSIBLE_FOR_TEXT) + ":")
+				# print("\n" + i, _(MOSTLY_RESPONSIBLE_FOR_TEXT) + ":")
+				res += "\n" + i, _(MOSTLY_RESPONSIBLE_FOR_TEXT) + ":"
 
 				for j, entry in enumerate(responsibilities):
 					(width, _unused) = terminal.get_size()
 					width -= 7
 
-					print(str(entry[0]).rjust(6), end=" ")
-					print("...%s" % entry[1][-width + 3 :] if len(entry[1]) > width else entry[1])
+					# print(str(entry[0]).rjust(6), end=" ")
+					res += str(entry[0]).rjust(6) + " "
+					# print("...%s" % entry[1][-width + 3 :] if len(entry[1]) > width else entry[1])
+					res += "...%s" % entry[1][-width + 3 :] if len(entry[1]) > width else entry[1]
 
 					if j >= 9:
 						break
 
+		return res
+
 	def output_html(self):
-		resp_xml = '<div><div class="box" id="responsibilities">'
-		resp_xml += "<p>" + _(RESPONSIBILITIES_INFO_TEXT) + ".</p>"
+		resp_html = '<div><div class="box" id="responsibilities">'
+		resp_html += "<p>" + _(RESPONSIBILITIES_INFO_TEXT) + ".</p>"
 
 		for i in sorted(set(i[0] for i in self.blame.blames)):
 			responsibilities = sorted(((i[1], i[0]) for i in resp.Responsibilities.get(self.blame, i)), reverse=True)
 
 			if responsibilities:
-				resp_xml += "<div>"
+				resp_html += "<div>"
 
 				if format.get_selected() == "html":
 					author_email = self.changes.get_latest_email_by_author(i)
-					resp_xml += '<h3><img src="{0}"/>{1} {2}</h3>'.format(
+					resp_html += '<h3><img src="{0}"/>{1} {2}</h3>'.format(
 						gravatar.get_url(author_email, size=32), i, _(MOSTLY_RESPONSIBLE_FOR_TEXT)
 					)
 				else:
-					resp_xml += "<h3>{0} {1}</h3>".format(i, _(MOSTLY_RESPONSIBLE_FOR_TEXT))
+					resp_html += "<h3>{0} {1}</h3>".format(i, _(MOSTLY_RESPONSIBLE_FOR_TEXT))
 
 				for j, entry in enumerate(responsibilities):
-					resp_xml += "<div" + (' class="odd">' if j % 2 == 1 else ">") + entry[1] + " (" + str(entry[0]) + " eloc)</div>"
+					resp_html += "<div" + (' class="odd">' if j % 2 == 1 else ">") + entry[1] + " (" + str(entry[0]) + " Effective Lines of Code)</div>"
 					if j >= 9:
 						break
 
-				resp_xml += "</div>"
-		resp_xml += "</div></div>"
-		print(resp_xml)
+				resp_html += "</div>"
+
+		resp_html += "</div></div>"
+
+		# print(resp_html)
+		return resp_html
 
 	def output_json(self):
 		message_json = '\t\t\t"message": "' + _(RESPONSIBILITIES_INFO_TEXT) + '",\n'
-		resp_json = ""
+		resp_json    = ""
 
 		for i in sorted(set(i[0] for i in self.blame.blames)):
 			responsibilities = sorted(((i[1], i[0]) for i in resp.Responsibilities.get(self.blame, i)), reverse=True)
@@ -113,11 +123,12 @@ class ResponsibilitiesOutput(Outputable):
 				resp_json += "]\n\t\t\t},"
 
 		resp_json = resp_json[:-1]
-		print(',\n\t\t"responsibilities": {\n' + message_json + '\t\t\t"authors": [\n\t\t\t' + resp_json + "]\n\t\t}", end="")
+		# print(',\n\t\t"responsibilities": {\n' + message_json + '\t\t\t"authors": [\n\t\t\t' + resp_json + "]\n\t\t}", end="")
+		return ',\n\t\t"responsibilities": {\n' + message_json + '\t\t\t"authors": [\n\t\t\t' + resp_json + "]\n\t\t}"
 
 	def output_xml(self):
 		message_xml = "\t\t<message>" + _(RESPONSIBILITIES_INFO_TEXT) + "</message>\n"
-		resp_xml = ""
+		resp_xml    = ""
 
 		for i in sorted(set(i[0] for i in self.blame.blames)):
 			responsibilities = sorted(((i[1], i[0]) for i in resp.Responsibilities.get(self.blame, i)), reverse=True)
@@ -142,4 +153,5 @@ class ResponsibilitiesOutput(Outputable):
 				resp_xml += "\t\t\t\t</files>\n"
 				resp_xml += "\t\t\t</author>\n"
 
-		print("\t<responsibilities>\n" + message_xml + "\t\t<authors>\n" + resp_xml + "\t\t</authors>\n\t</responsibilities>")
+		# print("\t<responsibilities>\n" + message_xml + "\t\t<authors>\n" + resp_xml + "\t\t</authors>\n\t</responsibilities>")
+		return "\t<responsibilities>\n" + message_xml + "\t\t<authors>\n" + resp_xml + "\t\t</authors>\n\t</responsibilities>"

@@ -28,184 +28,202 @@ MODIFIED_ROWS_TEXT = N_("Modified Rows:")
 
 
 def __output_row__text__(timeline_data, periods, names):
-	print("\n" + terminal.__bold__ + terminal.ljust(_("Author"), 20), end=" ")
+  # print("\n" + terminal.__bold__ + terminal.ljust(_("Author"), 20), end=" ")
+  res = "\n" + terminal.__bold__ + terminal.ljust(_("Author"), 20) + " "
 
-	for period in periods:
-		print(terminal.rjust(period, 10), end=" ")
+  for period in periods:
+    # print(terminal.rjust(period, 10), end=" ")
+    res += terminal.rjust(period, 10) + " "
 
-	print(terminal.__normal__)
+  # print(terminal.__normal__)
+  res += terminal.__normal__
 
-	for name in names:
-		if timeline_data.is_author_in_periods(periods, name[0]):
-			print(terminal.ljust(name[0], 20)[0 : 20 - terminal.get_excess_column_count(name[0])], end=" ")
+  for name in names:
+    if timeline_data.is_author_in_periods(periods, name[0]):
+      # print(terminal.ljust(name[0], 20)[0 : 20 - terminal.get_excess_column_count(name[0])], end=" ")
+      res += terminal.ljust(name[0], 20)[0 : 20 - terminal.get_excess_column_count(name[0])] + " "
 
-			for period in periods:
-				multiplier = timeline_data.get_multiplier(period, 9)
-				signs = timeline_data.get_author_signs_in_period(name[0], period, multiplier)
-				signs_str = signs[1] * "-" + signs[0] * "+"
-				print(
-					("." if timeline_data.is_author_in_period(period, name[0]) and len(signs_str) == 0 else signs_str).rjust(10), end=" ",
-				)
-			print("")
+      for period in periods:
+        multiplier = timeline_data.get_multiplier(period, 9)
+        signs = timeline_data.get_author_signs_in_period(name[0], period, multiplier)
+        signs_str = signs[1] * "-" + signs[0] * "+"
+        # print(("." if timeline_data.is_author_in_period(period, name[0]) and len(signs_str) == 0 else signs_str).rjust(10), end=" ",)
+        res += ("." if timeline_data.is_author_in_period(period, name[0]) and len(signs_str) == 0 else signs_str).rjust(10) + " "
 
-	print(terminal.__bold__ + terminal.ljust(_(MODIFIED_ROWS_TEXT), 20) + terminal.__normal__, end=" ")
+      # print("")
+      res += ""
 
-	for period in periods:
-		total_changes = str(timeline_data.get_total_changes_in_period(period)[2])
+  # print(terminal.__bold__ + terminal.ljust(_(MODIFIED_ROWS_TEXT), 20) + terminal.__normal__, end=" ")
+  res += terminal.__bold__ + terminal.ljust(_(MODIFIED_ROWS_TEXT), 20) + terminal.__normal__ + " "
 
-		if hasattr(total_changes, "decode"):
-			total_changes = total_changes.decode("utf-8", "replace")
+  for period in periods:
+    total_changes = str(timeline_data.get_total_changes_in_period(period)[2])
 
-		print(terminal.rjust(total_changes, 10), end=" ")
+    if hasattr(total_changes, "decode"):
+      total_changes = total_changes.decode("utf-8", "replace")
 
-	print("")
+    # print(terminal.rjust(total_changes, 10), end=" ")
+    res += terminal.rjust(total_changes, 10) + " "
+
+  # print("")
+  res += ""
+  return res
 
 
 def __output_row__html__(timeline_data, periods, names):
-	timeline_xml = '<table class="git full"><thead><tr><th>' + _("Author") + "</th>"
+  timeline_html = '<table class="git full"><thead><tr><th>' + _("Author") + "</th>"
 
-	for period in periods:
-		timeline_xml += "<th>" + str(period) + "</th>"
+  for period in periods:
+    timeline_html += "<th>" + str(period) + "</th>"
 
-	timeline_xml += "</tr></thead><tbody>"
-	i = 0
+  timeline_html += "</tr></thead><tbody>"
+  i = 0
 
-	for name in names:
-		if timeline_data.is_author_in_periods(periods, name[0]):
-			timeline_xml += "<tr" + (' class="odd">' if i % 2 == 1 else ">")
+  for name in names:
+    if timeline_data.is_author_in_periods(periods, name[0]):
+      timeline_html += "<tr" + (' class="odd">' if i % 2 == 1 else ">")
 
-			if format.get_selected() == "html":
-				timeline_xml += '<td><img src="{0}"/>{1}</td>'.format(gravatar.get_url(name[1]), name[0])
-			else:
-				timeline_xml += "<td>" + name[0] + "</td>"
+      if format.get_selected() == "html":
+        timeline_html += '<td><img src="{0}"/>{1}</td>'.format(gravatar.get_url(name[1]), name[0])
+      else:
+        timeline_html += "<td>" + name[0] + "</td>"
 
-			for period in periods:
-				multiplier = timeline_data.get_multiplier(period, 18)
-				signs = timeline_data.get_author_signs_in_period(name[0], period, multiplier)
-				signs_str = signs[1] * '<div class="remove">&nbsp;</div>' + signs[0] * '<div class="insert">&nbsp;</div>'
+      for period in periods:
+        multiplier = timeline_data.get_multiplier(period, 18)
+        signs = timeline_data.get_author_signs_in_period(name[0], period, multiplier)
+        signs_str = signs[1] * '<div class="remove">&nbsp;</div>' + signs[0] * '<div class="insert">&nbsp;</div>'
 
-				timeline_xml += "<td>" + ("." if timeline_data.is_author_in_period(period, name[0]) and len(signs_str) == 0 else signs_str)
-				timeline_xml += "</td>"
-			timeline_xml += "</tr>"
-			i = i + 1
+        timeline_html += "<td>" + ("." if timeline_data.is_author_in_period(period, name[0]) and len(signs_str) == 0 else signs_str)
+        timeline_html += "</td>"
+      timeline_html += "</tr>"
+      i = i + 1
 
-	timeline_xml += "<tfoot><tr><td><strong>" + _(MODIFIED_ROWS_TEXT) + "</strong></td>"
+  timeline_html += "<tfoot><tr><td><strong>" + _(MODIFIED_ROWS_TEXT) + "</strong></td>"
 
-	for period in periods:
-		total_changes = timeline_data.get_total_changes_in_period(period)
-		timeline_xml += "<td>" + str(total_changes[2]) + "</td>"
+  for period in periods:
+    total_changes = timeline_data.get_total_changes_in_period(period)
+    timeline_html += "<td>" + str(total_changes[2]) + "</td>"
 
-	timeline_xml += "</tr></tfoot></tbody></table>"
-	print(timeline_xml)
+  timeline_html += "</tr></tfoot></tbody></table>"
+  # print(timeline_html)
+  return timeline_html
 
 
 class TimelineOutput(Outputable):
-	def __init__(self, changes, useweeks):
-		self.changes = changes
-		self.useweeks = useweeks
-		Outputable.__init__(self)
+  def __init__(self, changes, useweeks):
+    self.changes = changes
+    self.useweeks = useweeks
+    Outputable.__init__(self)
 
-	def output_text(self):
-		if self.changes.get_commits():
-			print("\n" + textwrap.fill(_(TIMELINE_INFO_TEXT) + ":", width=terminal.get_size()[0]))
+  def output_text(self):
+    if self.changes.get_commits():
+      # print("\n" + textwrap.fill(_(TIMELINE_INFO_TEXT) + ":", width=terminal.get_size()[0]))
+      res = "\n" + textwrap.fill(_(TIMELINE_INFO_TEXT) + ":", width=terminal.get_size()[0])
 
-			timeline_data = timeline.TimelineData(self.changes, self.useweeks)
-			periods = timeline_data.get_periods()
-			names = timeline_data.get_authors()
-			(width, _unused) = terminal.get_size()
-			max_periods_per_row = int((width - 21) / 11)
+      timeline_data       = timeline.TimelineData(self.changes, self.useweeks)
+      periods             = timeline_data.get_periods()
+      names               = timeline_data.get_authors()
+      (width, _unused)    = terminal.get_size()
+      max_periods_per_row = int((width - 21) / 11)
 
-			for i in range(0, len(periods), max_periods_per_row):
-				__output_row__text__(timeline_data, periods[i : i + max_periods_per_row], names)
+      for i in range(0, len(periods), max_periods_per_row):
+        res += __output_row__text__(timeline_data, periods[i : i + max_periods_per_row], names)
 
-	def output_html(self):
-		if self.changes.get_commits():
-			timeline_data = timeline.TimelineData(self.changes, self.useweeks)
-			periods = timeline_data.get_periods()
-			names = timeline_data.get_authors()
-			max_periods_per_row = 8
+      return res
 
-			timeline_xml = '<div><div id="timeline" class="box">'
-			timeline_xml += "<p>" + _(TIMELINE_INFO_TEXT) + ".</p>"
-			print(timeline_xml)
 
-			for i in range(0, len(periods), max_periods_per_row):
-				__output_row__html__(timeline_data, periods[i : i + max_periods_per_row], names)
+  def output_html(self):
+    if self.changes.get_commits():
+      timeline_data       =  timeline.TimelineData(self.changes, self.useweeks)
+      periods             =  timeline_data.get_periods()
+      names               =  timeline_data.get_authors()
+      max_periods_per_row =  8
+      timeline_xml        =  '<div><div id="timeline" class="box">'
+      timeline_xml        += "<p>" + _(TIMELINE_INFO_TEXT) + ".</p>"
 
-			timeline_xml = "</div></div>"
-			print(timeline_xml)
+      # print(timeline_xml)
+      res = timeline_xml
 
-	def output_json(self):
-		if self.changes.get_commits():
-			message_json = '\t\t\t"message": "' + _(TIMELINE_INFO_TEXT) + '",\n'
-			timeline_json = ""
-			periods_json = '\t\t\t"period_length": "{0}",\n'.format("week" if self.useweeks else "month")
-			periods_json += '\t\t\t"periods": [\n\t\t\t'
+      for i in range(0, len(periods), max_periods_per_row):
+        res += __output_row__html__(timeline_data, periods[i : i + max_periods_per_row], names)
 
-			timeline_data = timeline.TimelineData(self.changes, self.useweeks)
-			periods = timeline_data.get_periods()
-			names = timeline_data.get_authors()
+      timeline_xml = "</div></div>"
+      res += "</div></div>"
 
-			for period in periods:
-				name_json = '\t\t\t\t"name": "' + str(period) + '",\n'
-				authors_json = '\t\t\t\t"authors": [\n\t\t\t\t'
+      # print(timeline_xml)
+      return res
 
-				for name in names:
-					if timeline_data.is_author_in_period(period, name[0]):
-						multiplier = timeline_data.get_multiplier(period, 24)
-						signs = timeline_data.get_author_signs_in_period(name[0], period, multiplier)
-						signs_str = signs[1] * "-" + signs[0] * "+"
+  def output_json(self):
+    if self.changes.get_commits():
+      message_json  =   '\t\t\t"message": "' + _(TIMELINE_INFO_TEXT) + '",\n'
+      timeline_json =   ""
+      periods_json  =   '\t\t\t"period_length": "{0}",\n'.format("week" if self.useweeks else "month")
+      periods_json  += '\t\t\t"periods": [\n\t\t\t'
+      timeline_data =  timeline.TimelineData(self.changes, self.useweeks)
+      periods       =  timeline_data.get_periods()
+      names         =  timeline_data.get_authors()
 
-						if len(signs_str) == 0:
-							signs_str = "."
+      for period in periods:
+        name_json    = '\t\t\t\t"name": "' + str(period) + '",\n'
+        authors_json = '\t\t\t\t"authors": [\n\t\t\t\t'
 
-						authors_json += '{\n\t\t\t\t\t"name": "' + name[0] + '",\n'
-						authors_json += '\t\t\t\t\t"email": "' + name[1] + '",\n'
-						authors_json += '\t\t\t\t\t"gravatar": "' + gravatar.get_url(name[1]) + '",\n'
-						authors_json += '\t\t\t\t\t"work": "' + signs_str + '"\n\t\t\t\t},'
-				else:
-					authors_json = authors_json[:-1]
+        for name in names:
+          if timeline_data.is_author_in_period(period, name[0]):
+            multiplier = timeline_data.get_multiplier(period, 24)
+            signs      = timeline_data.get_author_signs_in_period(name[0], period, multiplier)
+            signs_str  = signs[1] * "-" + signs[0] * "+"
 
-				authors_json += "],\n"
-				modified_rows_json = '\t\t\t\t"modified_rows": ' + str(timeline_data.get_total_changes_in_period(period)[2]) + "\n"
-				timeline_json += "{\n" + name_json + authors_json + modified_rows_json + "\t\t\t},"
-			else:
-				timeline_json = timeline_json[:-1]
+            if len(signs_str) == 0:
+              signs_str = "."
 
-			print(',\n\t\t"timeline": {\n' + message_json + periods_json + timeline_json + "]\n\t\t}", end="")
+            authors_json += '{\n\t\t\t\t\t"name": "' + name[0] + '",\n'
+            authors_json += '\t\t\t\t\t"email": "' + name[1] + '",\n'
+            authors_json += '\t\t\t\t\t"gravatar": "' + gravatar.get_url(name[1]) + '",\n'
+            authors_json += '\t\t\t\t\t"work": "' + signs_str + '"\n\t\t\t\t},'
+        else:
+          authors_json = authors_json[:-1]
 
-	def output_xml(self):
-		if self.changes.get_commits():
-			message_xml = "\t\t<message>" + _(TIMELINE_INFO_TEXT) + "</message>\n"
-			timeline_xml = ""
-			periods_xml = '\t\t<periods length="{0}">\n'.format("week" if self.useweeks else "month")
+        authors_json       += "],\n"
+        modified_rows_json =  '\t\t\t\t"modified_rows": ' + str(timeline_data.get_total_changes_in_period(period)[2]) + "\n"
+        timeline_json      += "{\n" + name_json + authors_json + modified_rows_json + "\t\t\t},"
+      else:
+        timeline_json = timeline_json[:-1]
 
-			timeline_data = timeline.TimelineData(self.changes, self.useweeks)
-			periods = timeline_data.get_periods()
-			names = timeline_data.get_authors()
+      # print(',\n\t\t"timeline": {\n' + message_json + periods_json + timeline_json + "]\n\t\t}", end="")
+      return ',\n\t\t"timeline": {\n' + message_json + periods_json + timeline_json + "]\n\t\t}"
 
-			for period in periods:
-				name_xml = "\t\t\t\t<name>" + str(period) + "</name>\n"
-				authors_xml = "\t\t\t\t<authors>\n"
+  def output_xml(self):
+    if self.changes.get_commits():
+      message_xml   = "\t\t<message>" + _(TIMELINE_INFO_TEXT) + "</message>\n"
+      timeline_xml  = ""
+      periods_xml   = '\t\t<periods length="{0}">\n'.format("week" if self.useweeks else "month")
+      timeline_data = timeline.TimelineData(self.changes, self.useweeks)
+      periods       = timeline_data.get_periods()
+      names         = timeline_data.get_authors()
 
-				for name in names:
-					if timeline_data.is_author_in_period(period, name[0]):
-						multiplier = timeline_data.get_multiplier(period, 24)
-						signs = timeline_data.get_author_signs_in_period(name[0], period, multiplier)
-						signs_str = signs[1] * "-" + signs[0] * "+"
+      for period in periods:
+        name_xml    = "\t\t\t\t<name>" + str(period) + "</name>\n"
+        authors_xml = "\t\t\t\t<authors>\n"
 
-						if len(signs_str) == 0:
-							signs_str = "."
+        for name in names:
+          if timeline_data.is_author_in_period(period, name[0]):
+            multiplier = timeline_data.get_multiplier(period, 24)
+            signs      = timeline_data.get_author_signs_in_period(name[0], period, multiplier)
+            signs_str  = signs[1] * "-" + signs[0] * "+"
 
-						authors_xml += "\t\t\t\t\t<author>\n\t\t\t\t\t\t<name>" + name[0] + "</name>\n"
-						authors_xml += "\t\t\t\t\t\t<email>" + name[1] + "</email>\n"
-						authors_xml += "\t\t\t\t\t\t<gravatar>" + gravatar.get_url(name[1]) + "</gravatar>\n"
-						authors_xml += "\t\t\t\t\t\t<work>" + signs_str + "</work>\n\t\t\t\t\t</author>\n"
+            if len(signs_str) == 0:
+              signs_str = "."
 
-				authors_xml += "\t\t\t\t</authors>\n"
-				modified_rows_xml = (
-					"\t\t\t\t<modified_rows>" + str(timeline_data.get_total_changes_in_period(period)[2]) + "</modified_rows>\n"
-				)
-				timeline_xml += "\t\t\t<period>\n" + name_xml + authors_xml + modified_rows_xml + "\t\t\t</period>\n"
+            authors_xml += "\t\t\t\t\t<author>\n\t\t\t\t\t\t<name>" + name[0] + "</name>\n"
+            authors_xml += "\t\t\t\t\t\t<email>" + name[1] + "</email>\n"
+            authors_xml += "\t\t\t\t\t\t<gravatar>" + gravatar.get_url(name[1]) + "</gravatar>\n"
+            authors_xml += "\t\t\t\t\t\t<work>" + signs_str + "</work>\n\t\t\t\t\t</author>\n"
 
-			print("\t<timeline>\n" + message_xml + periods_xml + timeline_xml + "\t\t</periods>\n\t</timeline>")
+        authors_xml       += "\t\t\t\t</authors>\n"
+        modified_rows_xml =  (
+          "\t\t\t\t<modified_rows>" + str(timeline_data.get_total_changes_in_period(period)[2]) + "</modified_rows>\n"
+        )
+        timeline_xml      += "\t\t\t<period>\n" + name_xml + authors_xml + modified_rows_xml + "\t\t\t</period>\n"
+
+      # print("\t<timeline>\n" + message_xml + periods_xml + timeline_xml + "\t\t</periods>\n\t</timeline>")
+      return "\t<timeline>\n" + message_xml + periods_xml + timeline_xml + "\t\t</periods>\n\t</timeline>"

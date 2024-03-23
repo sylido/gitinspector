@@ -39,26 +39,28 @@ FILTERING_COMMIT_INFO_TEXT = N_(
 class FilteringOutput(Outputable):
 	@staticmethod
 	def __output_html_section__(info_string, filtered):
-		filtering_xml = ""
+		filtering_html = ""
 
 		if filtered:
-			filtering_xml += "<p>" + info_string + "." + "</p>"
+			filtering_html += "<p>" + info_string + "." + "</p>"
 
 			for i in filtered:
-				filtering_xml += "<p>" + i + "</p>"
+				filtering_html += "<p>" + i + "</p>"
 
-		return filtering_xml
+		return filtering_html
 
 	def output_html(self):
 		if has_filtered():
-			filtering_xml = '<div><div class="box">'
+			filtering_html = '<div><div class="box">'
 			FilteringOutput.__output_html_section__(_(FILTERING_INFO_TEXT), __filters__["file"][1])
 			FilteringOutput.__output_html_section__(_(FILTERING_AUTHOR_INFO_TEXT), __filters__["author"][1])
 			FilteringOutput.__output_html_section__(_(FILTERING_EMAIL_INFO_TEXT), __filters__["email"][1])
 			FilteringOutput.__output_html_section__(_(FILTERING_COMMIT_INFO_TEXT), __filters__["revision"][1])
-			filtering_xml += "</div></div>"
+			filtering_html += "</div></div>"
 
-			print(filtering_xml)
+			# print(filtering_html)
+
+			return filtering_html
 
 	@staticmethod
 	def __output_json_section__(info_string, filtered, container_tagname):
@@ -71,13 +73,16 @@ class FilteringOutput(Outputable):
 			else:
 				filtering_json = filtering_json[:-3]
 
-			return (
-				'\n\t\t\t"{0}": {{\n'.format(container_tagname)
-				+ message_json
-				+ '\t\t\t\t"entries": [\n'
-				+ filtering_json
-				+ '"\n\t\t\t\t]\n\t\t\t},'
-			)
+
+			res = '\n\t\t\t"{0}": {{\n'.format(container_tagname)
+			+ message_json
+			+ '\t\t\t\t"entries": [\n'
+			+ filtering_json
+			+ '"\n\t\t\t\t]\n\t\t\t},'
+
+			# print(res)
+
+			return res
 
 		return ""
 
@@ -90,41 +95,56 @@ class FilteringOutput(Outputable):
 			output += FilteringOutput.__output_json_section__(_(FILTERING_COMMIT_INFO_TEXT), __filters__["revision"][1], "revision")
 			output = output[:-1]
 			output += "\n\t\t}"
-			print(output, end="")
+
+			# print(output, end="")
+
+			return output
 
 	@staticmethod
 	def __output_text_section__(info_string, filtered):
+		res = ""
 		if filtered:
-			print("\n" + textwrap.fill(info_string + ":", width=terminal.get_size()[0]))
+			# print("\n" + textwrap.fill(info_string + ":", width=terminal.get_size()[0]))
+			res = "\n" + textwrap.fill(info_string + ":", width=terminal.get_size()[0])
 
 			for i in filtered:
 				(width, _unused) = terminal.get_size()
-				print("...%s" % i[-width + 3 :] if len(i) > width else i)
+				# print("...%s" % i[-width + 3 :] if len(i) > width else i)
+				res += "...%s" % i[-width + 3 :] if len(i) > width else i
+
+			return res
 
 	def output_text(self):
-		FilteringOutput.__output_text_section__(_(FILTERING_INFO_TEXT), __filters__["file"][1])
+		FilteringOutput.__output_text_section__(_(FILTERING_INFO_TEXT), 			 __filters__["file"][1])
 		FilteringOutput.__output_text_section__(_(FILTERING_AUTHOR_INFO_TEXT), __filters__["author"][1])
-		FilteringOutput.__output_text_section__(_(FILTERING_EMAIL_INFO_TEXT), __filters__["email"][1])
+		FilteringOutput.__output_text_section__(_(FILTERING_EMAIL_INFO_TEXT),  __filters__["email"][1])
 		FilteringOutput.__output_text_section__(_(FILTERING_COMMIT_INFO_TEXT), __filters__["revision"][1])
 
 	@staticmethod
 	def __output_xml_section__(info_string, filtered, container_tagname):
+		res = ""
 		if filtered:
-			message_xml = "\t\t\t<message>" + info_string + "</message>\n"
+			message_xml   = "\t\t\t<message>" + info_string + "</message>\n"
 			filtering_xml = ""
 
 			for i in filtered:
 				filtering_xml += "\t\t\t\t<entry>" + i + "</entry>\n"
 
-			print("\t\t<{0}>".format(container_tagname))
-			print(message_xml + "\t\t\t<entries>\n" + filtering_xml + "\t\t\t</entries>\n")
-			print("\t\t</{0}>".format(container_tagname))
+			# print("\t\t<{0}>".format(container_tagname))
+			# print(message_xml + "\t\t\t<entries>\n" + filtering_xml + "\t\t\t</entries>\n")
+			# print("\t\t</{0}>".format(container_tagname))
+
+			res = "\t\t<{0}>".format(container_tagname)
+			+ message_xml + "\t\t\t<entries>\n" + filtering_xml + "\t\t\t</entries>\n"
+			+ "\t\t</{0}>".format(container_tagname)
+
+			return res
 
 	def output_xml(self):
 		if has_filtered():
-			print("\t<filtering>")
+			# print("\t<filtering>")
 			FilteringOutput.__output_xml_section__(_(FILTERING_INFO_TEXT), __filters__["file"][1], "files")
 			FilteringOutput.__output_xml_section__(_(FILTERING_AUTHOR_INFO_TEXT), __filters__["author"][1], "authors")
 			FilteringOutput.__output_xml_section__(_(FILTERING_EMAIL_INFO_TEXT), __filters__["email"][1], "emails")
 			FilteringOutput.__output_xml_section__(_(FILTERING_COMMIT_INFO_TEXT), __filters__["revision"][1], "revision")
-			print("\t</filtering>")
+			# print("\t</filtering>")

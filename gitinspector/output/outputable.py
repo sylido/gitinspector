@@ -37,10 +37,10 @@ class Outputable():
 
 def output(outputable):
 	if format.get_selected() == "html" or format.get_selected() == "htmlembedded":
-		outputable.output_html()
+		return outputable.output_html() or ""
 	elif format.get_selected() == "json":
-		outputable.output_json()
+		return outputable.output_json() or ""
 	elif format.get_selected() == "text":
-		outputable.output_text()
+		return outputable.output_text() or ""
 	else:
-		outputable.output_xml()
+		return outputable.output_xml() or ""

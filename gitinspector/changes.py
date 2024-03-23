@@ -29,11 +29,12 @@ from . import extensions, filtering, format, interval, terminal
 import time
 import re
 
-CHANGES_PER_THREAD = 200
+CHANGES_PER_THREAD = 100
 NUM_THREADS        = multiprocessing.cpu_count()
+print("Running on %d thread(s) with %d changes per each thread." % (NUM_THREADS, CHANGES_PER_THREAD))
 # NUM_THREADS        = 1
 
-__thread_lock__ = threading.BoundedSemaphore(NUM_THREADS)
+__thread_lock__  = threading.BoundedSemaphore(NUM_THREADS)
 __changes_lock__ = threading.Lock()
 
 
@@ -42,9 +43,9 @@ class FileDiff():
     commit_line = string.split("|")
 
     if commit_line.__len__() == 2:
-      self.name = commit_line[0].strip()
+      self.name       = commit_line[0].strip()
       self.insertions = commit_line[1].count("+")
-      self.deletions = commit_line[1].count("-")
+      self.deletions  = commit_line[1].count("-")
 
   @staticmethod
   def is_filediff_line(string):
@@ -74,7 +75,8 @@ class Commit():
   def __init__(self, string):
     self.filediffs = []
 
-    print("commit string :", string)
+    # print("commit string : '" + string + "'")
+
     pattern = re.compile("^\d{10}")
 
     commit_line = string.split("|")
@@ -83,16 +85,16 @@ class Commit():
     # match by this instead
     if pattern.match(string):
       self.timestamp = commit_line[0] if commit_line[0] else int(time.time())
-      self.date = commit_line[1]
-      self.sha = commit_line[2]
-      self.author = commit_line[3].strip()
-      self.email = commit_line[4].strip()
+      self.date      = commit_line[1]
+      self.sha       = commit_line[2]
+      self.author    = commit_line[3].strip()
+      self.email     = commit_line[4].strip()
     else:
       self.timestamp = ""
-      self.date = ""
-      self.sha = ""
-      self.author = ""
-      self.email = ""
+      self.date      = ""
+      self.sha       = ""
+      self.author    = ""
+      self.email     = ""
 
   def __lt__(self, other):
     return self.timestamp.__lt__(other.timestamp if other.timestamp else int(time.time()))  # only used for sorting; we just consider the timestamp.
@@ -116,10 +118,10 @@ class Commit():
 
 
 class AuthorInfo():
-  email = None
+  email      = None
   insertions = 0
-  deletions = 0
-  commits = 0
+  deletions  = 0
+  commits    = 0
 
 
 class ChangesThread(threading.Thread):
@@ -127,15 +129,15 @@ class ChangesThread(threading.Thread):
     __thread_lock__.acquire()  # Lock controlling the number of threads running
     threading.Thread.__init__(self)
 
-    self.hard = hard
-    self.changes = changes
-    self.first_hash = first_hash
+    self.hard        = hard
+    self.changes     = changes
+    self.first_hash  = first_hash
     self.second_hash = second_hash
-    self.offset = offset
+    self.offset      = offset
 
   @staticmethod
   def create(hard, changes, first_hash, second_hash, offset):
-    thread = ChangesThread(hard, changes, first_hash, second_hash, offset)
+    thread        = ChangesThread(hard, changes, first_hash, second_hash, offset)
     thread.daemon = True
     thread.start()
 
@@ -164,10 +166,10 @@ class ChangesThread(threading.Thread):
     lines = git_log_r.readlines()
     git_log_r.close()
 
-    commit = None
+    commit                = None
     found_valid_extension = False
-    is_filtered = False
-    commits = []
+    is_filtered           = False
+    commits               = []
 
     __changes_lock__.acquire()  # Global lock used to protect calls from here...
 
@@ -177,17 +179,19 @@ class ChangesThread(threading.Thread):
       j = j.decode("utf-8", "replace")
 
       if Commit.is_commit_line(j):
+        # print("this com line ? '" + j + "'")
         (author, email) = Commit.get_author_and_email(j)
         self.changes.emails_by_author[author] = email
         self.changes.authors_by_email[email] = author
 
-      if Commit.is_commit_line(j) or i is lines[-1]:
+      # or i is lines[-1] // removed because it incorrectly parses commit lines...
+      if Commit.is_commit_line(j):
         if found_valid_extension:
           bisect.insort(commits, commit)
 
         found_valid_extension = False
         is_filtered = False
-        print("this is a commit line ? ", j)
+
         commit = Commit(j)
 
         if Commit.is_commit_line(j) and (
@@ -203,7 +207,7 @@ class ChangesThread(threading.Thread):
 
         if FileDiff.is_valid_extension(j):
           found_valid_extension = True
-          filediff = FileDiff(j)
+          filediff              = FileDiff(j)
           commit.add_filediff(filediff)
 
     self.changes.commits[self.offset // CHANGES_PER_THREAD] = commits
@@ -215,7 +219,7 @@ PROGRESS_TEXT = N_("Fetching and calculating primary statistics (1 of 2): {0:.0f
 
 
 class Changes():
-  authors = {}
+  authors          = {}
   authors_dateinfo = {}
   authors_by_email = {}
   emails_by_author = {}
@@ -236,22 +240,22 @@ class Changes():
       if repo is not None:
         progress_text = "[%s] " % repo.name + progress_text
 
-      chunks = len(lines) // CHANGES_PER_THREAD
+      chunks       = len(lines) // CHANGES_PER_THREAD
       self.commits = [None] * (chunks if len(lines) % CHANGES_PER_THREAD == 0 else chunks + 1)
-      first_hash = ""
+      first_hash   = ""
 
       for i, entry in enumerate(lines):
         if i % CHANGES_PER_THREAD == CHANGES_PER_THREAD - 1:
-          entry = entry.decode("utf-8", "replace").strip()
+          entry       = entry.decode("utf-8", "replace").strip()
           second_hash = entry
           ChangesThread.create(hard, self, first_hash, second_hash, i)
-          first_hash = entry + ".."
+          first_hash  = entry + ".."
 
-          if format.is_interactive_format():
-            terminal.output_progress(progress_text, i, len(lines))
+          # if format.is_interactive_format():
+          terminal.output_progress(progress_text, i, len(lines))
       else:
         if CHANGES_PER_THREAD - 1 != i % CHANGES_PER_THREAD:
-          entry = entry.decode("utf-8", "replace").strip()
+          entry       = entry.decode("utf-8", "replace").strip()
           second_hash = entry
           ChangesThread.create(hard, self, first_hash, second_hash, i)
 
@@ -305,7 +309,7 @@ class Changes():
 
     for j in commit.get_filediffs():
       authors[key].insertions += j.insertions
-      authors[key].deletions += j.deletions
+      authors[key].deletions  += j.deletions
 
   def get_authorinfo_list(self):
     if not self.authors:

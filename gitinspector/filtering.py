@@ -22,11 +22,11 @@ import re
 import subprocess
 
 __filters__ = {
-	"file": [set(), set()],
-	"author": [set(), set()],
-	"email": [set(), set()],
-	"revision": [set(), set()],
-	"message": [set(), None],
+	"file"     : [set(), set()],
+	"author"   : [set(), set()],
+	"email"    : [set(), set()],
+	"revision" : [set(), set()],
+	"message"  : [set(), None]
 }
 
 

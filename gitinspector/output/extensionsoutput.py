@@ -38,23 +38,24 @@ class ExtensionsOutput(Outputable):
 
 	def output_html(self):
 		if extensions.__located_extensions__:
-			extensions_xml = '<div><div class="box">'
-			extensions_xml += "<p>{0} {1}.</p><p>".format(_(EXTENSIONS_INFO_TEXT), _(EXTENSIONS_MARKED_TEXT))
+			extensions_html = '<div><div class="box">'
+			extensions_html += "<p>{0} {1}.</p><p>".format(_(EXTENSIONS_INFO_TEXT), _(EXTENSIONS_MARKED_TEXT))
 
 			for i in sorted(extensions.__located_extensions__):
 				if ExtensionsOutput.is_marked(i):
-					extensions_xml += "<strong>" + i + "</strong>"
+					extensions_html += "<strong>" + i + "</strong>"
 				else:
-					extensions_xml += i
-				extensions_xml += " "
+					extensions_html += i
+				extensions_html += " "
 
-			extensions_xml += "</p></div></div>"
-			print(extensions_xml)
+			extensions_html += "</p></div></div>"
+			# print(extensions_html)
+			return extensions_html
 
 	def output_json(self):
 		if extensions.__located_extensions__:
-			message_json = '\t\t\t"message": "' + _(EXTENSIONS_INFO_TEXT) + '",\n'
-			used_extensions_json = ""
+			message_json           = '\t\t\t"message": "' + _(EXTENSIONS_INFO_TEXT) + '",\n'
+			used_extensions_json   = ""
 			unused_extensions_json = ""
 
 			for i in sorted(extensions.__located_extensions__):
@@ -63,26 +64,24 @@ class ExtensionsOutput(Outputable):
 				else:
 					unused_extensions_json += '"' + i + '", '
 
-			used_extensions_json = used_extensions_json[:-2]
+			used_extensions_json   = used_extensions_json[:-2]
 			unused_extensions_json = unused_extensions_json[:-2]
 
-			print(
-				',\n\t\t"extensions": {\n'
-				+ message_json
-				+ '\t\t\t"used": [ '
-				+ used_extensions_json
-				+ ' ],\n\t\t\t"unused": [ '
-				+ unused_extensions_json
-				+ " ]\n"
-				+ "\t\t}",
-				end="",
-			)
+			res = ',\n\t\t"extensions": {\n'
+			+ message_json
+			+ '\t\t\t"used": [ '
+			+ used_extensions_json
+			+ ' ],\n\t\t\t"unused": [ '
+			+ unused_extensions_json
+			+ " ]\n"
+			+ "\t\t}"
+
+			# print(res, end="")
+			return res
 
 	def output_text(self):
 		if extensions.__located_extensions__:
-			print(
-				"\n" + textwrap.fill("{0} {1}:".format(_(EXTENSIONS_INFO_TEXT), _(EXTENSIONS_MARKED_TEXT)), width=terminal.get_size()[0])
-			)
+			print("\n" + textwrap.fill("{0} {1}:".format(_(EXTENSIONS_INFO_TEXT), _(EXTENSIONS_MARKED_TEXT)), width=terminal.get_size()[0]))
 
 			for i in sorted(extensions.__located_extensions__):
 				if ExtensionsOutput.is_marked(i):
@@ -93,8 +92,8 @@ class ExtensionsOutput(Outputable):
 
 	def output_xml(self):
 		if extensions.__located_extensions__:
-			message_xml = "\t\t<message>" + _(EXTENSIONS_INFO_TEXT) + "</message>\n"
-			used_extensions_xml = ""
+			message_xml           = "\t\t<message>" + _(EXTENSIONS_INFO_TEXT) + "</message>\n"
+			used_extensions_xml   = ""
 			unused_extensions_xml = ""
 
 			for i in sorted(extensions.__located_extensions__):
@@ -103,14 +102,17 @@ class ExtensionsOutput(Outputable):
 				else:
 					unused_extensions_xml += "\t\t\t<extension>" + i + "</extension>\n"
 
-			print(
-				"\t<extensions>\n"
-				+ message_xml
-				+ "\t\t<used>\n"
-				+ used_extensions_xml
-				+ "\t\t</used>\n"
-				+ "\t\t<unused>\n"
-				+ unused_extensions_xml
-				+ "\t\t</unused>\n"
-				+ "\t</extensions>"
-			)
+			res = "\t<extensions>\n"
+			+ message_xml
+			+ "\t\t<used>\n"
+			+ used_extensions_xml
+			+ "\t\t</used>\n"
+			+ "\t\t<unused>\n"
+			+ unused_extensions_xml
+			+ "\t\t</unused>\n"
+			+ "\t</extensions>"
+
+			# print(res)
+
+			return res
+
